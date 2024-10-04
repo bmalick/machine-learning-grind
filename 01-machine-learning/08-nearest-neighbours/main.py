@@ -1,66 +1,76 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sklearn.datasets
+import utils
 from nearset_neighbours import NearestNeighbours
 
-def create_dataset(add_bad_labels: bool = False):
-    def make_orange(n): return np.random.rand(n, 2)
-    def make_blue(n): return np.random.rand(n, 2) + np.c_[np.zeros(n), 0.1+np.ones(n)]
-    x1 = make_orange(40)
-    y1 = np.ones(40)
-    x2 = make_blue(40)
-    y2 = np.zeros(40)
-    if add_bad_labels:
-        x3 = make_orange(4)
-        y3 = np.zeros(4)
-        x4 = make_blue(6)
-        y4 = np.ones(6)
-        
-    if add_bad_labels:
-        idx = np.arange(90)
-        np.random.shuffle(idx)
-        X = np.vstack([x1,x2,x3,x4])
-        y = np.hstack([y1,y2,y3,y4]).reshape(-1,1)
-    else:
-        idx = np.arange(80)
-        np.random.shuffle(idx)
-        X = np.vstack([x1,x2])
-        y = np.hstack([y1,y2]).reshape(-1,1)
-    return X[idx], y[idx].reshape(-1)
 
-def decision_boundary(ax, xbounds, ybounds, colors, model: NearestNeighbours, N: int):
-    dx = (xbounds[1] - xbounds[0])/float(N)
-    dy = (ybounds[1] - ybounds[0])/float(N)
-
-    xx, yy = np.meshgrid(np.arange(xbounds[0]-0.1, xbounds[1]+0.1, dx),
-                         np.arange(ybounds[0]-0.1, ybounds[1]+0.1, dy))
-    y_hat = model.predict(np.c_[xx.ravel(), yy.ravel()])
-    y_hat = (y_hat > 0.5).astype(int)
-    y_hat = y_hat.reshape(xx.shape)
-    ax.contourf(xx, yy, y_hat, alpha=0.4,
-                levels=[0, 0.5, 1.0], colors=colors)
-
-def main():
-    X, y = create_dataset()
+def k_nearest(k, ax1, ax2, colors = np.array(['#ff7f00', '#377eb8'])):
+    X, y = utils.create_dataset()
     xbounds = (X[:,0].min(), X[:,0].max())
     ybounds = (X[:,1].min(), X[:,1].max())
-
-    colors = np.array(['#ff7f00', '#377eb8'])
-
-    model = NearestNeighbours(k=50)
-    model_with_kernel = NearestNeighbours(gaussian_kernel=True, sigma=0.01)
+    model = NearestNeighbours(k=k)
     model.fit(X, y)
+
+    ax1.scatter(X[:, 0], X[:, 1], c=colors[y.astype(int)], s=5)
+    title = "k-Nearest Neighbours - k = %d" % model.k
+    print(title + " - custom data")
+    ax1.set_title(title)
+    utils.decision_boundary(ax1, xbounds, ybounds, colors, model, 100)
+
+    X, y = sklearn.datasets.make_moons(100)
+    xbounds = (X[:,0].min(), X[:,0].max())
+    ybounds = (X[:,1].min(), X[:,1].max())
+    model = NearestNeighbours(k=k)
+    model.fit(X, y)
+    ax2.scatter(X[:, 0], X[:, 1], c=colors[y.astype(int)], s=5)
+    title = "k-Nearest Neighbours - k = %d" % model.k
+    print(title + " - moon data")
+    ax2.set_title(title)
+    utils.decision_boundary(ax2, xbounds, ybounds, colors, model, 100)
+
+def kernel_method(sigma, ax1, ax2, colors = np.array(['#ff7f00', '#377eb8'])):
+    X, y = utils.create_dataset()
+    xbounds = (X[:,0].min(), X[:,0].max())
+    ybounds = (X[:,1].min(), X[:,1].max())
+    model_with_kernel = NearestNeighbours(gaussian_kernel=True, sigma=sigma)
     model_with_kernel.fit(X, y)
+    ax1.scatter(X[:, 0], X[:, 1], c=colors[y.astype(int)], s=5)
+    ax1.scatter(X[:, 0], X[:, 1], c=colors[y.astype(int)], s=5)
+    title = r"Nearest Neighbours - $\sigma = %s$" % model_with_kernel.sigma
+    print(title + " - custom data")
+    ax1.set_title(title)
+    utils.decision_boundary(ax1, xbounds, ybounds, colors, model_with_kernel, 100)
 
-    figure = plt.figure(figsize=(12,6))
-    ax = plt.subplot(1,2,1)
-    ax.scatter(X[:, 0], X[:, 1], c=colors[y.astype(int)])
-    ax.set_title("k-Nearest Neighbours - k = %d" % model.k)
-    decision_boundary(ax, xbounds, ybounds, colors, model, 100)
-    ax = plt.subplot(1,2,2)
-    ax.scatter(X[:, 0], X[:, 1], c=colors[y.astype(int)])
-    ax.set_title(r"Nearest Neighbours - $\sigma = %s$" % model_with_kernel.sigma)
-    decision_boundary(ax, xbounds, ybounds, colors, model_with_kernel, 100)
+    X, y = sklearn.datasets.make_moons(100)
+    xbounds = (X[:,0].min(), X[:,0].max())
+    ybounds = (X[:,1].min(), X[:,1].max())
+    model_with_kernel = NearestNeighbours(gaussian_kernel=True, sigma=sigma)
+    model_with_kernel.fit(X, y)
+    ax2.scatter(X[:, 0], X[:, 1], c=colors[y.astype(int)], s=5)
+    ax2.scatter(X[:, 0], X[:, 1], c=colors[y.astype(int)], s=5)
+    title = r"Nearest Neighbours - $\sigma = %s$" % model_with_kernel.sigma
+    print(title + " - moon data")
+    ax2.set_title(title)
+    utils.decision_boundary(ax2, xbounds, ybounds, colors, model_with_kernel, 100)
 
+
+
+
+def main():
+    figure, axes = plt.subplots(4,4, figsize=(20,15))
+    axes = axes.ravel()
+    for ax in axes: ax.set_xticks([]); ax.set_yticks([])
+
+    k_nearest(k=1, ax1=axes[0], ax2=axes[1])
+    k_nearest(k=10, ax1=axes[2], ax2=axes[3])
+    k_nearest(k=30, ax1=axes[4], ax2=axes[5])
+    k_nearest(k=40, ax1=axes[6], ax2=axes[7])
+    kernel_method(sigma=1, ax1=axes[8], ax2=axes[9])
+    kernel_method(sigma=0.1, ax1=axes[10], ax2=axes[11])
+    kernel_method(sigma=0.01, ax1=axes[12], ax2=axes[13])
+    kernel_method(sigma=0.001, ax1=axes[14], ax2=axes[15])
+    plt.savefig("nearest-neighours.jpg")    
     plt.show()
 
 if __name__ == "__main__": main()
