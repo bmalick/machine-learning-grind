@@ -20,6 +20,7 @@ class PCA:
         self.eigenvectors = self.eigenvectors[:, ::-1]
         self.eigenvalues = self.eigenvalues[::-1]
 
+        self.variance_ratio = self.eigenvalues[:self.n_components] / self.eigenvalues.sum()
 
     def transform(self, X: np.array) -> np.ndarray:
         return np.dot(X-self.centered, self.eigenvectors[:, :self.n_components])
@@ -29,10 +30,13 @@ class PCA:
         return self.transform(X)
 
 
+
 def linear_kernel(x: np.ndarray, y: np.ndarray) -> float:
     return np.dot(x.T, y)
 
 def get_sigma(gamma: float) -> float: return 1/np.sqrt(gamma*2)
+
+def get_gamma(sigma: float) -> float: return 1/sigma**2
 
 def find_sigma(X: np.ndarray) -> float: return sklearn.metrics.euclidean_distances(X).mean()
 
@@ -66,7 +70,6 @@ class kPCA:
     def gram(self, X: np.ndarray) -> np.ndarray:
         return np.array([[self.kernel(xi,xj) for xi in X] for xj in X])
 
-
     def fit(self, X: np.ndarray) -> None:
         K = self.gram(X)
         K = self.center(K)
@@ -74,7 +77,7 @@ class kPCA:
         self.eigenvalues, self.eigenvectors = np.linalg.eigh(cov)
         self.eigenvectors = self.eigenvectors[:, ::-1]
         self.eigenvalues = self.eigenvalues[::-1]
-
+        self.variance_ratio = self.eigenvalues[:self.n_components] / self.eigenvalues.sum()
 
     def transform(self, X: np.array) -> np.ndarray:
         G = self.gram(X)

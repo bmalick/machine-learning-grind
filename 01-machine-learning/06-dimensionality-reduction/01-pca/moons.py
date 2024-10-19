@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import sklearn.datasets
 import pca
 
+from sklearn.decomposition import PCA
+
 if __name__ ==  "__main__":
     N = 100
     X, y = sklearn.datasets.make_moons(N, random_state=42)
@@ -19,6 +21,7 @@ if __name__ ==  "__main__":
     print("w2 = ", w2)
     print("1st eigen value: %.2f%%" % (model.eigenvalues[0] / model.eigenvalues.sum()*100))
     print("2nd eigen value: %.2f%%" % (model.eigenvalues[1] / model.eigenvalues.sum()*100))
+    print("variance ratio: ", model.variance_ratio.tolist())
 
 
     ax = plt.subplot(1,2,1)
@@ -31,4 +34,9 @@ if __name__ ==  "__main__":
     ax.scatter(X_transformed[:, 0], X_transformed[:, 1], alpha=0.4)
     ax.set_title("Transformed")
 
-    plt.show()
+    # plt.show()
+    mpca = PCA(n_components=2)
+    mpca.fit(X)
+    print(mpca.explained_variance_ratio_)
+    print(mpca.components_.T[:, 0])
+    print(mpca.components_.T[:, 1])

@@ -10,6 +10,7 @@ def dim_red(X, y, n_components, kernel, ax, title):
     print("2 first eigen values = ", model.eigenvalues.tolist()[:2])
     print("1st eigen value: %.2f%%" % (model.eigenvalues[0] / model.eigenvalues.sum()*100))
     print("2nd eigen value: %.2f%%" % (model.eigenvalues[1] / model.eigenvalues.sum()*100))
+    print("variance ratio: ", model.variance_ratio.tolist())
     print("variance kept with 10 components: %.2f%%" % (model.eigenvalues[:10].sum() / model.eigenvalues.sum()*100))
 
     X_transformed = model.transform(X)

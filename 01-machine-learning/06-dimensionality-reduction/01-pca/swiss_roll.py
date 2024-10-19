@@ -1,15 +1,10 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import sklearn.datasets
 import pca
 
 if __name__ == "__main__":
-    N = 5000
-    X, y = sklearn.datasets.fetch_openml("mnist_784", version=1, return_X_y=True, as_frame=False)
-
-    X = X[:N] / 255.
-    y = y[:N]
-    y = np.array(y, dtype=int)
+    N = 1000
+    X, y = sklearn.datasets.make_swiss_roll(n_samples=N, noise=0.1, random_state=42)
 
     n_components = 2
     model = pca.PCA(n_components=n_components)
@@ -27,6 +22,6 @@ if __name__ == "__main__":
     plt.scatter(X_transformed[:, 0], X_transformed[:, 1], alpha=0.4, c=y)
     plt.xlabel("Principal Component 1")
     plt.ylabel("Principal Component 2")
-    plt.title("PCA of MNIST")
+    plt.title("PCA of Swiss Roll")
     plt.colorbar(label="Digit Label")
     plt.show()
