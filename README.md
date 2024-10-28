@@ -1,11 +1,30 @@
 
-# machine learning and deep learning roadmap learning
+# Machine Learning Grind
 
-- Learning Machine Learning and Deep Learning based on books [Dive into Deep Learning] & [Hands-on Machine Learning with Scikit-Learn Keras & TensorFlow]
+> [!Note]
+> helloo ...
+> i'm studying Machine Learning and Deep Learning based on books `Understanding Deep Learning`, `Dive into Deep Learning` & `Hands-on Machine Learning with Scikit-Learn Keras & TensorFlow`.
 
-- Using PyTorch
+# Content
 
-- Inspired by saurabhaloneai from github
+[Machine Learning]()
+
+- [Principal Component Analysis](01-machine-learning/06-dimensionality-reduction/01-pca)
+
+[Deep Neural Networks](#deep-neural-networks)
+
+[Optimization and Regularization](#optimization-and-regularization)
+
+[Computer Vision](#computer-vision)
+
+[Natural Language Processing](#natural-language-processing)
+
+[Time Series](#time-series)
+
+[Reinforcement learning](#reinforcement-learning)
+
+
+
 
 
 
@@ -16,103 +35,104 @@
 | -------------- | ---------- |
 |                |            | -->
 
-## 01-machine-learning
+<!-- ## 01-machine-learning -->
 <!-- ✅ -->
-
-| Task                        | Status     |
-| --------------------------- | ---------- |
-| 01-stats                    |            |
-| 02-linear-regression        |            |
-| 03-svm                      |            |
-| 04-decision-tree            |            |
-| 05-ensemble-learning        |            |
-| 06-dimensionality-reduction |            |
-| 07-unsupervised-learning    |            |
-
-## 02-deep-neural-networks
+<!---->
+<!-- | Task                        | Status     | -->
+<!-- | --------------------------- | ---------- | -->
+<!-- | 01-stats                    |            | -->
+<!-- | 02-linear-regression        |            | -->
+<!-- | 03-svm                      |            | -->
+<!-- | 04-decision-tree            |            | -->
+<!-- | 05-ensemble-learning        |            | -->
+<!-- | 06-dimensionality-reduction |            | -->
+<!-- | 07-unsupervised-learning    |            | -->
+<!---->
+<!-- ## 02-deep-neural-networks -->
 <!-- ✅ -->
-
-| Task              | Status     |
-| ----------------- | ---------- |
-| 01-le-net         |            |
-| 02-alex-net       |            |
-| 03-google-le-net  |            |
-| 04-vgg-net        |            |
-| 05-res-net        |            |
-| 06-xception       |            |
-| 07-se-net         |            |
-| 08-unet           |            |
-
-## 03-optimization-and-regularization
+<!---->
+<!-- | Task              | Status     | -->
+<!-- | ----------------- | ---------- | -->
+<!-- | 01-le-net         |            | -->
+<!-- | 02-alex-net       |            | -->
+<!-- | 03-google-le-net  |            | -->
+<!-- | 04-vgg-net        |            | -->
+<!-- | 05-res-net        |            | -->
+<!-- | 06-xception       |            | -->
+<!-- | 07-se-net         |            | -->
+<!-- | 08-unet           |            | -->
+<!---->
+<!-- ## 03-optimization-and-regularization -->
 <!-- ✅ -->
-
-| Task                       | Status     |
-| -------------------------- | ---------- |
-| 00-backpropagation         |            |
-| 01-initializations         |            |
-| 02-activations             |            |
-| 03-losses                  |            |
-| 04-optimizers              |            |
-| 05-learning-rate-schedule  |            |
-| 06-early-stopping          |            |
-| 07-batch-norm              |            |
-| 08-layer-norm              |            |
-| 09-gradient-clipping       |            |
-| 10-weights-decay           |            |
-| 11-dropout                 |            |
-
-## 04-cnn
+<!---->
+<!-- | Task                       | Status     | -->
+<!-- | -------------------------- | ---------- | -->
+<!-- | 00-backpropagation         |            | -->
+<!-- | 01-initializations         |            | -->
+<!-- | 02-activations             |            | -->
+<!-- | 03-losses                  |            | -->
+<!-- | 04-optimizers              |            | -->
+<!-- | 05-learning-rate-schedule  |            | -->
+<!-- | 06-early-stopping          |            | -->
+<!-- | 07-batch-norm              |            | -->
+<!-- | 08-layer-norm              |            | -->
+<!-- | 09-gradient-clipping       |            | -->
+<!-- | 10-weights-decay           |            | -->
+<!-- | 11-dropout                 |            | -->
+<!---->
+<!-- ## 04-cnn -->
 <!-- ✅ -->
-| Task                    | Status     |
-| ----------------------- | ---------- |
-| 01-convolutions-filters |            |
-| 02-padding-and-stride   |            |
-| 03-channels             |            |
-| 04-pooling              |            |
-
-## 05-rnn
+<!-- | Task                    | Status     | -->
+<!-- | ----------------------- | ---------- | -->
+<!-- | 01-convolutions-filters |            | -->
+<!-- | 02-padding-and-stride   |            | -->
+<!-- | 03-channels             |            | -->
+<!-- | 04-pooling              |            | -->
+<!---->
+<!-- ## 05-rnn -->
 <!-- ✅ -->
-| Task                            | Status     |
-| ------------------------------- | ---------- |
-| 01-rnn                          |            |
-| 02-backpropagation-through-time |            |
-| 03-lstm                         |            |
-| 04-gru                          |            |
-| 05-deep-rnn                     |            |
-| 06-bidirectional-rnn            |            |
-| 07-machine-learning-translation |            |
-| 08-encoder-decoder-architecture |            |
-| 09-seq2seq                      |            |
-| 10-beam-search                  |            |
-
-## 06-transformers
+<!-- | Task                            | Status     | -->
+<!-- | ------------------------------- | ---------- | -->
+<!-- | 01-rnn                          |            | -->
+<!-- | 02-backpropagation-through-time |            | -->
+<!-- | 03-lstm                         |            | -->
+<!-- | 04-gru                          |            | -->
+<!-- | 05-deep-rnn                     |            | -->
+<!-- | 06-bidirectional-rnn            |            | -->
+<!-- | 07-machine-learning-translation |            | -->
+<!-- | 08-encoder-decoder-architecture |            | -->
+<!-- | 09-seq2seq                      |            | -->
+<!-- | 10-beam-search                  |            | -->
+<!---->
+<!-- ## 06-transformers -->
 <!-- ✅ -->
-| Task                        | Status     |
-| --------------------------- | ---------- |
-| 01-attention                |            |
-| 02-multihead-attention      |            |
-| 03-positional-encoding      |            |
-| 04-transformer-architecture |            |
-| 05-transformer-for-vision   |            |
-
-
-## 07-gans
+<!-- | Task                        | Status     | -->
+<!-- | --------------------------- | ---------- | -->
+<!-- | 01-attention                |            | -->
+<!-- | 02-multihead-attention      |            | -->
+<!-- | 03-positional-encoding      |            | -->
+<!-- | 04-transformer-architecture |            | -->
+<!-- | 05-transformer-for-vision   |            | -->
+<!---->
+<!---->
+<!-- ## 07-gans -->
 <!-- ✅ -->
-
-## 08-reinforcement-learning
+<!---->
+<!-- ## 08-reinforcement-learning -->
 <!-- ✅ -->
-
-## 09-hyperparameter-optimization
+<!---->
+<!-- ## 09-hyperparameter-optimization -->
 <!-- ✅ -->
-
-## 10-recommender-systems
+<!---->
+<!-- ## 10-recommender-systems -->
 <!-- ✅ -->
-
+<!---->
 # Papers
 
 <!-- Machine learning -->
 
-<!-- Deep neural network -->
+## Deep Neural Networks
+
 - [ ] **DNN** - Learning Internal Representations by Error Propagation [[pdf]](https://stanford.edu/~jlmcc/papers/PDP/Volume%201/Chap8_PDP86.pdf)
 - [ ] **Train DNN** - Training Very Deep Networks (2015) [[pdf]](https://proceedings.neurips.cc/paper_files/paper/2015/file/215a71a12769b056c3c32e7299f1c5ed-Paper.pdf)
 - [ ] **Deep Learning** - Deep Learning (2015) [[pdf]](https://www.cs.toronto.edu/~hinton/absps/NatureDeepReview.pdf)
@@ -122,7 +142,8 @@
 - [ ] **LSTM** - Long-Short Term Memory (1997), S. Hochreiter and J. Schmidhuber [[pdf]](https://www.bioinf.jku.at/publications/older/2604.pdf)
 - [ ] **Learning to Forget** - Learning to Forget: Continual Prediction with LSTM (2000), F. A. Gers et al. [[pdf]](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=e10f98b86797ebf6c8caea6f54cacbc5a50e8b34)
 
-<!-- Optimization and regularization -->
+## Optimization and Regularization
+
 - [ ] **Xavier Initialization** - Understanding the difficulty of training deep feedforward neural networks [[pdf]](https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf)
 - [ ] **Adam** - Adam: A Method for Stochastic Optimization (2014) [[pdf]](https://arxiv.org/pdf/1412.6980)
 - [ ] **BatchNorm** - Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift (2015) [[pdf]](https://arxiv.org/pdf/1502.03167)
@@ -133,7 +154,8 @@
 - [ ] **GELU** - Gaussian Error Linear Units (GELUs) (2016), D. Hendrycks and K. Gimpel [[pdf]](https://arxiv.org/pdf/1606.08415)
 - [ ] **PPO** - Proximal Policy Optimization Algorithms (2017) [[pdf]](https://arxiv.org/pdf/1707.06347)
 
-<!-- Computer vision -->
+## Computer Vision
+
 - [ ] **LeNet** - Gradient-Based Learning Applied to Document Recognition [[pdf]](http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf)
 - [ ] **CNN** - Backpropagation Applied to Handwritten Zip Code Recognition [[pdf]](http://yann.lecun.com/exdb/publis/pdf/lecun-89e.pdf)
 - [ ] **Deep CNN** - Very Deep Convolutional Networks for Large-Scale Image Recognition (2015) [[pdf]](https://arxiv.org/pdf/1409.1556)
@@ -170,7 +192,8 @@
 - [ ] **DALLE 2** - Hierarchical Text-Conditional Image Generation with CLIP Latents (2022) [[pdf]](https://arxiv.org/pdf/2204.06125)
 - [ ] **CLIP** - Learning Transferable Visual Models From Natural Language Supervision (2021) [[pdf]](https://arxiv.org/pdf/2103.00020)
 
-<!-- NLP & Transformers -->
+## Natural Language Processing
+
 - [ ] **Encoder-Decoder** - Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation (2014) [[pdf]](https://arxiv.org/pdf/1406.1078)
 - [ ] **Seq2Seq** - Sequence to Sequence Learning with Neural Networks [[pdf]](https://arxiv.org/pdf/1409.3215)
 - [ ] **GloVe** - GloVe: Global Vectors for Word Representation (2014) [[pdf]](https://nlp.stanford.edu/pubs/glove.pdf)
@@ -200,12 +223,14 @@
 - [ ] **Prompt Tuning** - The Power of Scale for Parameter-Efficient Prompt Tuning (2021) [[pdf]](https://arxiv.org/pdf/2104.08691)
 - [ ] **InstructGPT** - Training language models to follow instructions with human feedback (2022) [[pdf]](https://arxiv.org/pdf/2203.02155)
 
-<!-- Time Series -->
+## Time Series
+
 - [ ] **WaveNet** - WaveNet: A Generative Model for Raw Audio (2016) [[pdf]](https://arxiv.org/pdf/1609.03499)
 - [ ] **Whisper** - Robust Speech Recognition via Large-Scale Weak Supervision (2022) [[pdf]](https://arxiv.org/pdf/2212.04356)
 - [ ] **MMS** - Scaling Speech Technology to 1,000+ Languages (2023) [[pdf]](https://arxiv.org/pdf/2305.13516)
 
-<!-- Reinforcement learning -->
+## Reinforcement Learning
+
 - [ ] **Reinforcement Learning** - Playing Atari with Deep Reinforcement Learning (2013) [[pdf]](https://arxiv.org/pdf/1312.5602)
 - [ ] **RLHF** - Fine-Tuning Language Models From Human Preferences (2019), D. Ziegler et al. [[pdf]](https://arxiv.org/pdf/1909.08593)
 - [ ] **RLHF** - Training language models to follow instructions with human feedback (2022), L. Ouyang, J. Wu et al. [[pdf]](https://arxiv.org/pdf/2203.02155)
