@@ -4,6 +4,7 @@
 > [!Note]
 > helloo ...
 > i'm studying Machine Learning and Deep Learning based on books `Understanding Deep Learning`, `Dive into Deep Learning` & `Hands-on Machine Learning with Scikit-Learn Keras & TensorFlow`.
+> Inspired by [saurabhaloneai](https://github.com/saurabhaloneai/History-of-Deep-Learning) from twitter
 
 # Content
 
