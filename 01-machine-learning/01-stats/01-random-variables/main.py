@@ -81,20 +81,36 @@ def bivariate_distribution_configs():
     # var_y = 2*var_x + RandomVariable("Noise", gaussian_distribution(mu=0, sigma=1))
     RandomVariable.get_bivariate_density(var_x=var_x, var_y=var_y, n=n, ax=axes[0]) # Positive correlation
     axes[0].set_title("Positive correlation")
+    
     y = -2*x+np.random.normal(0,1,1000)
     var_y = RandomVariable("-2*X+noise", lambda n: y[:n])
     RandomVariable.get_bivariate_density(var_x=var_x, var_y=var_y, n=n, ax=axes[1]) # Negative correlation
     axes[1].set_title("Negative correlation")
+
     var_x = RandomVariable("X", gaussian_distribution(mu=0, sigma=1))
     var_y = RandomVariable("X", gaussian_distribution(mu=0, sigma=1))
     RandomVariable.get_bivariate_density(var_x=var_x, var_y=var_y, n=n, ax=axes[2]) # No correlation
     axes[2].set_title("No correlation")
+
+    x = np.random.normal(0,1,1000)
+    var_x = RandomVariable("X", lambda n: x[:n])
+    y = 2*x+np.random.normal(0,1,1000)
+    var_y = RandomVariable("2*X+noise", lambda n: y[:n])
+    RandomVariable.get_bivariate_density(var_x=var_x, var_y=var_y, n=n, ax=axes[3])
+
+    x = np.random.normal(0,0.5,1000)
+    var_x = RandomVariable("X", lambda n: x[:n])
+    y = 2*x+np.random.normal(0,0.5,1000)
+    var_y = RandomVariable("2*X+noise", lambda n: y[:n])
+    RandomVariable.get_bivariate_density(var_x=var_x, var_y=var_y, n=n, ax=axes[3], colors="#ff7f0e")
     x = np.random.normal(0,0.001,1000)
     var_x = RandomVariable("X", lambda n: x[:n])
     y = 2*x+np.random.normal(0,0.001,1000)
     var_y = RandomVariable("2*X+noise", lambda n: y[:n])
     RandomVariable.get_bivariate_density(var_x=var_x, var_y=var_y, n=n, ax=axes[3])
-    axes[3].set_title("Contours are narrow compared to figure (1,1)")
+    axes[3].set_title("Low and high variance")
+    axes[3].set_xlabel("")
+    axes[3].set_ylabel("")
     
     plt.show()
 

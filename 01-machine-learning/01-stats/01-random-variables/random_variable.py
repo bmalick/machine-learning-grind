@@ -4,7 +4,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import stats
 
 # distributions
 def uniform_distribution(): return lambda n: np.random.rand(n)
@@ -18,7 +17,7 @@ class RandomVariable:
         self.max_values = max_values
 
     @staticmethod
-    def constant_var(c: float, name: str, max_values: int):
+    def constant_var(c: float, name: str, max_values: int=None):
         return RandomVariable(name=name, distribution=lambda n: np.array([c]*n), max_values=max_values)
 
     def __call__(self, n: int = 5):
@@ -97,7 +96,7 @@ class RandomVariable:
         return density / (n*h)
 
     @staticmethod
-    def get_bivariate_density(var_x, var_y, n: int, ax, plot=True, method="scott", margin_factor=0.1):
+    def get_bivariate_density(var_x, var_y, n: int, ax, plot=True, method="scott", margin_factor=0.1, colors="#1f77b4"):
         gaussian_kernel = lambda x: np.exp(-x**2 / 2) / np.sqrt(2 * np.pi)
         sigma_x = var_x.std(n)
         sigma_y = var_y.std(n)
@@ -116,7 +115,6 @@ class RandomVariable:
         x = np.linspace(sample_x.min() - margin_x, sample_x.max() + margin_x, n)
         y = np.linspace(sample_y.min() - margin_y, sample_y.max() + margin_y, n)
         xx, yy = np.meshgrid(x, y)
-        xy = np.vstack([xx.ravel(), yy.ravel()])
 
         density = np.zeros(xx.shape)
         for xi, yi in zip(sample_x, sample_y):
@@ -131,7 +129,7 @@ class RandomVariable:
 
         if plot:
             # Plot the contour of the joint density
-            ax.contour(xx, yy, density, levels=10, colors='#1f77b4')
+            ax.contour(xx, yy, density, levels=10, colors=colors)
             # ax.contour(xx, yy, density, levels=10)
             # ax.set_clabel(inline=True, fontsize=10)
             ax.set_title('p(%s, %s)' % (var_x.name, var_y.name))
