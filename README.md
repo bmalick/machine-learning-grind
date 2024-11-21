@@ -11,6 +11,7 @@
 
 - [Random Variables](01-machine-learning/01-stats/01-random-variables/main.ipynb)
 - [Principal Component Analysis](01-machine-learning/06-dimensionality-reduction/01-pca/main.ipynb)
+- [Support Vectors Machines](01-machine-learning/03-svm/main.ipynb)
 
 [Deep Neural Networks](#deep-neural-networks)
 
