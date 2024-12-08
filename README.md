@@ -14,6 +14,7 @@
 - [Principal Component Analysis](01-machine-learning/06-dimensionality-reduction/01-pca/main.ipynb)
 - [Support Vectors Machine](01-machine-learning/03-svm/main.ipynb)
 - [Monte Carlo Approximation](01-machine-learning/01-stats/02-monte-carlo/main.ipynb)
+- [Univariate Sampling Techniques](01-machine-learning/01-stats/03-univariate-sampling-techniques/main.ipynb)
 
 [Neural Networks](#neural-networks)
 - [Shallow Neural Network](02-neural-networks/01-shallow-neural-network/main.ipynb)

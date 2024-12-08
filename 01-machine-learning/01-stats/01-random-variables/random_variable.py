@@ -82,8 +82,8 @@ class RandomVariable:
 
     def estimated_density(self, x: np.ndarray, kernel, n: int = 1000, method="scott"):
         sigma = self.std(n)
-        if method=="scott": h = sigma / n**(1/5) # KDE bandwidth
-        elif method=="silverman": h = 0.9 * sigma * n**(-0.2)
+        if method=="scott": h = sigma**2 / n**(1/5) # KDE bandwidth
+        elif method=="silverman": h = 0.9 * sigma**2 * n**(-0.2)
 
         samples = self(n)
         margin = (samples.max()-samples.min())*0.1

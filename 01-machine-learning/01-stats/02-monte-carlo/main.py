@@ -30,6 +30,10 @@ def gaussian_var_estimation():
         estimated_mu, estimated_sigma = estimate_gaussian_var_params(gaussian_var)
         print("n = %5d - mu = %.5f - sigma = %.5f" % (n, estimated_mu, estimated_sigma))
 
+#####################
+# Estimation of pi  #
+#####################
+
 def monte_carlo_pi():
     def compute_pi(n):
         pi = 0
