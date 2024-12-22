@@ -2,5 +2,7 @@ datasets/
 .ipynb_checkpoints
 __pycache__
 *.jpg
+*.png
+*.txt
 *.pdf
 *.csv
