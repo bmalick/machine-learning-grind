@@ -4,10 +4,11 @@ import matplotlib.image as mpimg
 from graphviz import Digraph
 
 class Node:
-    def __init__(self, feature=None, label=None, threshold=None, samples=None, cost_function=None):
+    def __init__(self, feature=None, label=None, threshold=None, samples=None, cost_function=None, node_type="classification"):
         self.label = label
         self.feature = feature
         self.threshold = threshold
+        self.node_type = node_type
         self.samples = samples if samples is not None else []
         self._parent = None
         self._left = None
@@ -35,13 +36,19 @@ class Node:
     def right(self, node): self._right = node
 
     def __str__(self):
-        value = {yi: 0 for yi in self.samples[1]}
-        for yi in self.samples[1]: value[yi] += 1
-        value = ", ".join(["%s: %d" % (k,v) for k,v in value.items()])
-
-        res = "gini: %.5s\nfeature: %s\nthreshold: %.4s\nsamples: %d\nvalue: [%s]\nclass: %s" % (
-            self.cost_function(self.samples), str(self.feature), str(self.threshold), len(self), value, str(self.label),
-        )
+        res = ""
+        if self.node_type == "classification":
+            value = {yi: 0 for yi in self.samples[1]}
+            for yi in self.samples[1]: value[yi] += 1
+            value = ", ".join(["%s: %d" % (k,v) for k,v in value.items()])
+            res = "%s: %.5s\nfeature: %s\nthreshold: %.4s\nsamples: %d\nvalue: [%s]\nclass: %s" % (
+                self.cost_function.__name__, self.cost_function(self.samples), str(self.feature), str(self.threshold), len(self), value, str(self.label),
+            )
+        elif self.node_type == "regression":
+            value = self.samples[1].mean()
+            res = "%s: %.5s\nfeature: %s\nthreshold: %.4s\nsamples: %d\nvalue: %.6f" % (
+                self.cost_function.__name__, self.cost_function(self.samples), str(self.feature), str(self.threshold), len(self), value,
+            )
         return res
     
     def __repr__(self): return self.__str__()
@@ -74,7 +81,8 @@ class DecisionTree:
         self.tree = DecisionTree.growing_tree(
             data=(X,y), cost_function=self.cost_function, depth=0,
             max_depth=self.max_depth,
-            min_samples_per_leaf=self.min_samples_per_leaf
+            min_samples_per_leaf=self.min_samples_per_leaf,
+            node_type="classification" if str(y.dtype).startswith("int") else "regression"
         )
 
     def find_node(self, x: np.ndarray) -> Node:
@@ -88,7 +96,8 @@ class DecisionTree:
 
     def predict(self, x: np.ndarray) -> int|np.ndarray:
         if len(x.shape)==1:
-            return self.find_node(x).label
+            node = self.find_node(x)
+            return node.label if node.node_type=="classification" else node.samples[1].mean()
         else: return np.array([self.predict(xi) for xi in x])
     
     def predict_probas(self, x: np.ndarray) -> float|np.ndarray:
@@ -104,20 +113,20 @@ class DecisionTree:
 
     @staticmethod
     def growing_tree(data, cost_function, depth: int, max_depth: int = None,
-                     min_samples_per_leaf: int = None):
+                     min_samples_per_leaf: int = None, node_type="classification"):
         _, y = data
 
         if len(set(y))==1 or len(y) == 0 or \
             (max_depth is not None and max_depth<=depth) or \
             (min_samples_per_leaf is not None and len(y) < min_samples_per_leaf):
-            return Node(feature=None, label=DecisionTree.get_max_feature(y), threshold=None, samples=data, cost_function=cost_function)
+            return Node(feature=None, label=DecisionTree.get_max_feature(y), threshold=None, samples=data, cost_function=cost_function, node_type=node_type)
 
         feature, threshold, left_node, right_node = DecisionTree.node_split(data, cost_function)
 
         if feature is None:
-            return Node(feature=feature, threshold=threshold, samples=data, cost_function=cost_function)
+            return Node(feature=feature, threshold=threshold, samples=data, cost_function=cost_function, node_type=node_type)
         
-        root = Node(feature=feature, threshold=threshold, samples=data, cost_function=cost_function)
+        root = Node(feature=feature, threshold=threshold, samples=data, cost_function=cost_function, node_type=node_type)
         root.left = left_node
         root.right = right_node
         left_node.parent = root
@@ -125,16 +134,16 @@ class DecisionTree:
 
         if min_samples_per_leaf is not None:
             if len(left_node.samples[0]) < min_samples_per_leaf:
-                root.left = Node(feature=None, label=DecisionTree.get_max_feature(left_node.samples[1]), threshold=None, samples=left_node.samples, cost_function=cost_function)
+                root.left = Node(feature=None, label=DecisionTree.get_max_feature(left_node.samples[1]), threshold=None, samples=left_node.samples, cost_function=cost_function, node_type=node_type)
             else:
-                root.left = DecisionTree.growing_tree(left_node.samples, cost_function, depth + 1, max_depth, min_samples_per_leaf)
+                root.left = DecisionTree.growing_tree(left_node.samples, cost_function, depth + 1, max_depth, min_samples_per_leaf, node_type)
             if len(right_node.samples[0]) < min_samples_per_leaf:
-                root.right = Node(feature=None, label=DecisionTree.get_max_feature(right_node.samples[1]), threshold=None, samples=right_node.samples, cost_function=cost_function)
+                root.right = Node(feature=None, label=DecisionTree.get_max_feature(right_node.samples[1]), threshold=None, samples=right_node.samples, cost_function=cost_function, node_type=node_type)
             else:
-                root.right = DecisionTree.growing_tree(right_node.samples, cost_function, depth + 1, max_depth, min_samples_per_leaf)
+                root.right = DecisionTree.growing_tree(right_node.samples, cost_function, depth + 1, max_depth, min_samples_per_leaf, node_type)
         else:
-            root.left = DecisionTree.growing_tree(left_node.samples, cost_function, depth + 1, max_depth, min_samples_per_leaf)
-            root.right = DecisionTree.growing_tree(right_node.samples, cost_function, depth + 1, max_depth, min_samples_per_leaf)
+            root.left = DecisionTree.growing_tree(left_node.samples, cost_function, depth + 1, max_depth, min_samples_per_leaf, node_type)
+            root.right = DecisionTree.growing_tree(right_node.samples, cost_function, depth + 1, max_depth, min_samples_per_leaf, node_type)
 
         root.left.parent = root
         root.right.parent = root
