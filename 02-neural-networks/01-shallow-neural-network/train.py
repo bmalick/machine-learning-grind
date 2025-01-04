@@ -1,3 +1,4 @@
+#!/home/malick/miniconda3/envs/pt/bin/python
 import torch
 import torchvision
 from torchvision import transforms

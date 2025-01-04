@@ -1,3 +1,4 @@
+#!/home/malick/miniconda3/envs/pt/bin/python
 import sys
 from sklearn.datasets import load_iris
 import matplotlib.pyplot as plt

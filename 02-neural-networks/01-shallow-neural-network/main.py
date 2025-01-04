@@ -1,3 +1,4 @@
+#!/home/malick/miniconda3/envs/pt/bin/python
 import numpy as np
 import matplotlib.pyplot as plt
 from model import ShallowNeuralNetwork
