@@ -16,6 +16,21 @@ def gini(data):
 def accuracy(y_pred: np.ndarray, y_true: np.ndarray):
     return (y_pred==y_true).mean()
 
+def precision(y_pred: np.ndarray, y_true: np.ndarray):
+    numerator = (y_pred*y_true).sum()
+    denominator = y_pred.sum()
+    return numerator/denominator if denominator>0 else 0.
+
+def recall(y_pred: np.ndarray, y_true: np.ndarray):
+    numerator = (y_pred*y_true).sum()
+    denominator = y_true.sum()
+    return numerator/denominator if denominator>0 else 0.
+
+def f1_score(y_pred: np.ndarray, y_true: np.ndarray):
+    numerator = 2*(y_pred*y_true).sum()
+    denominator = y_true.sum() + y_pred.sum()
+    return numerator/denominator if denominator>0 else 0.
+
 def empirical_risk(classificer, X, y):
     y_pred = classificer.predict(X)
     return (y!=y_pred).sum() / len(y)
@@ -40,3 +55,4 @@ def create_dataset(n=500, noise=0.5):
     X = (X-X.min()) / (X.max() - X.min())
     y = (y-y.min()) / (y.max() - y.min())
     return X, y.reshape(-1)
+
