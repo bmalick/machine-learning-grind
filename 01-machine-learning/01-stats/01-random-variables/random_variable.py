@@ -95,7 +95,7 @@ class RandomVariable:
         return density / (n*h)
 
     @staticmethod
-    def get_bivariate_density(var_x, var_y, n: int, ax, plot=True, method="scott", margin_factor=0.1, colors="#1f77b4"):
+    def get_bivariate_density(var_x, var_y, n: int, ax=None, plot=True, method="scott", margin_factor=0.1, colors=None):
         gaussian_kernel = lambda x: np.exp(-x**2 / 2) / np.sqrt(2 * np.pi)
         sigma_x = var_x.std(n)
         sigma_y = var_y.std(n)
@@ -117,20 +117,20 @@ class RandomVariable:
 
         density = np.zeros(xx.shape)
         for xi, yi in zip(sample_x, sample_y):
-            kernel_x = gaussian_kernel((x - xi) / hx) / hx
-            kernel_y = gaussian_kernel((y - yi) / hy) / hy
-            density += np.outer(kernel_x, kernel_y)
+            kernel_x = gaussian_kernel((xx - xi) / hx) / hx
+            kernel_y = gaussian_kernel((yy - yi) / hy) / hy
+            density += kernel_x*kernel_y
         
         density /= n
-        for xi, yi in zip(sample_x, sample_y):
-            density += np.outer(gaussian_kernel((x - xi) / hx), gaussian_kernel((y - yi) / hy))
-        density /= (n*hx*hy)
 
         if plot:
+            if ax is None: fig, ax = plt.subplots()
             # Plot the contour of the joint density
-            ax.contour(xx, yy, density, levels=10, colors=colors)
-            # ax.contour(xx, yy, density, levels=10)
-            # ax.set_clabel(inline=True, fontsize=10)
+            if colors is not None:
+                contour = ax.contour(xx, yy, density, levels=10, colors=colors)
+            else:
+                contour = ax.contour(xx, yy, density, levels=10)
+            ax.clabel(contour, inline=True, fontsize=10)
             ax.set_title('p(%s, %s)' % (var_x.name, var_y.name))
             ax.set_xlabel(var_x.name)
             ax.set_ylabel(var_y.name)
