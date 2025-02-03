@@ -17,6 +17,7 @@
 - [Univariate Sampling Techniques](01-machine-learning/01-stats/03-univariate-sampling-techniques/main.ipynb)
 - [Decision Tree](01-machine-learning/04-decision-tree/main.ipynb)
 - [Naive Bayes](01-machine-learning/01-stats/04-naives-bayes/main.ipynb)
+- [Gaussian Process](01-machine-learning/01-stats/06-gaussian-process/main.ipynb)
 
 [Neural Networks](#neural-networks)
 - [Shallow Neural Network](02-neural-networks/01-shallow-neural-network/main.ipynb)
