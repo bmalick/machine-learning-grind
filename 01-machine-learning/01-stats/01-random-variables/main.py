@@ -151,47 +151,11 @@ def diabete_freatures():
     for i in range(len(columns)): axes[7,i].set_xlabel(columns[i])
     plt.show()
 
-def multivariate_normal(n: int = 1000):
-    mean=np.array([0,0])
-    cov = np.array([[1, 0.5], [0.5, 1.75]])
-    X = np.random.multivariate_normal(mean=mean, cov=cov, size=n)
-
-    mins = X.min(axis=0)
-    maxs = X.max(axis=0)
-    mins -= 0.1
-    maxs += 0.1
-
-    x = np.linspace(mins[0], maxs[0], 100)
-    y = np.linspace(mins[1], maxs[1], 100)
-    xx, yy = np.meshgrid(x, y)
-
-    mean_hat = X.mean(axis=0)
-    cov_hat = np.cov(X.T)
-
-    dim = X.shape[1]
-    def kernel(x):
-        func = lambda x: np.exp(-0.5 * (x-mean_hat).T@np.linalg.inv(cov_hat)@(x-mean_hat)) / (np.sqrt((2*np.pi)**dim * np.linalg.det(cov_hat)))
-        return np.array([func(t) for t in x])
-
-
-    # # kernel = scipy.stats.gaussian_kde(X.T, bw_method="scott")
-    xy = np.vstack([xx.ravel(), yy.ravel()])
-    densities = kernel(xy.T).reshape(xx.shape)
-    # plt.scatter(X[:, 0], X[:, 1])
-    plt.contour(xx, yy, densities, levels=5)
-    plt.show()
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-    ax.plot_surface(xx, yy, densities, cmap="viridis", edgecolor="none")
-    plt.show()
-
-
 if __name__ == "__main__":
     functions = [
         some_random_var, test_plot,
         bivariate_distribution, bivariate_distribution_configs,
-        diabete_freatures, multivariate_normal
+        diabete_freatures,
     ]
     if len(sys.argv) !=2:
         print("Usage: %s <function id>" % sys.argv[0])
