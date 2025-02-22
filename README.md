@@ -21,6 +21,7 @@
 
 [Neural Networks](#neural-networks)
 - [Shallow Neural Network](02-neural-networks/01-shallow-neural-network/main.ipynb)
+- [Bias & Variance](02-neural-networks/02-deep-neural-network/01-bias-variance/main.ipynb)
 
 [Optimization and Regularization](#optimization-and-regularization)
 
