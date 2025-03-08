@@ -11,11 +11,6 @@ x = np.linspace(0,1,100)
 def get_pdf(x, alpha, beta):
     return scipy.stats.beta.pdf(x, alpha, beta)
 
-
-# def bayesian_inference(n0)
-
-# n0, n1 = 1, 4
-# alpha, beta = 1, 1
 def plot_pdfs(n0, n1, alpha, beta, ax):
     prior = get_pdf(x, alpha, beta)
     likelihood = get_pdf(x, n1+1, n0+1)
