@@ -8,3 +8,5 @@ __pycache__
 *.csv
 readme
 SMSSpamCollection
+FashionMNIST/
+train_slurm.py
