@@ -54,69 +54,93 @@ def test_gaussian_process():
 target = lambda x : x ** 2 * np.exp(- np.abs(x)/3.)
 f = np.vectorize(target)
 
-def gaussian_process_regression(num_observations, ax, noise_data=0):
+def gaussian_process_regression(axes, num_observations=5, num_samples=3, noise_data=0, kernel=gp.squared_exp(sigma=1, l=1), color=None):
     Xo = np.random.uniform(-5,5,num_observations)
     Yo = f(Xo) + np.random.normal(0., noise_data, Xo.shape[0])
     Xp = np.linspace(-5,5,100)
 
     gaussian_process = gp.GaussianProcess(
-        mu=lambda x: 1.,
-        k=gp.squared_exp(sigma=1, l=2),
+        mu=lambda x: 0.,
+        k=kernel,
     )
+    gaussian_process.represent_prior(ax=axes[0], num_samples=num_samples, color=color)
 
-    num_samples = 5
     mu, cov = gaussian_process.get_posterior(Xp=Xp, Xo=Xo, Yo=Yo)
     y = np.random.multivariate_normal(mean=mu, cov=cov, size=num_samples)
     for i in range(num_samples):
-        ax.plot(Xp, y[i,:])
-    ax.plot(Xo, Yo, 'x', markeredgecolor='r',  markeredgewidth=2, markersize=10)
+        axes[1].plot(Xp, y[i,:], color=color)
+    axes[1].plot(Xo, Yo, 'x', markeredgecolor=color,  markeredgewidth=2, markersize=10)
+    std = np.sqrt(np.diag(cov))  # Extract standard deviation
+    axes[1].fill_between(Xp, mu - 2 * std, mu + 2 * std, color='gray', alpha=0.3, linewidth=0.1)  # Shaded region
+    axes[1].plot(Xp, mu, 'k', lw=1)  # Plot mean
+    axes[0].set_title(f"{num_samples} samples")
+    axes[1].set_title(f"{num_observations} observations")
+    for ax in axes:
+        ax.set_xticks([])
+        ax.set_yticks([])
+
 
 def gaussian_reg():
-    fig, axes = plt.subplots(2,2,figsize=(19.2,10.8))
-    axes = axes.ravel()
+    fig, axes = plt.subplots(4,2,figsize=(8,10.8))
     for i, n in enumerate([5, 10, 50, 100]):
-        gaussian_process_regression(num_observations=n, ax=axes[i])
+        gaussian_process_regression(axes=axes[i,:], num_observations=n, num_samples=3, noise_data=0., kernel=gp.squared_exp(sigma=1, l=1))
     plt.show()
 
 
-def gaussian_process_regression_white_noise(num_observations, ax, noise_data=0, white_noise=0.1):
+def gaussian_process_regression_white_noise(axes, num_observations=5, num_samples=3, noise_data=0, white_noise=0.1, kernel=gp.squared_exp(sigma=1, l=1), color=None):
     Xo = np.random.uniform(-5,5,num_observations)
     Yo = f(Xo) + np.random.normal(0., noise_data, Xo.shape[0])
     Xp = np.linspace(-5,5,100)
 
     white_noise_cov_func = lambda x,y: white_noise**2 if np.abs(x-y)<1e-8 else 0.
-
     gaussian_process = gp.GaussianProcess(
-        mu=lambda x: 1.,
-        k=lambda x,y: gp.squared_exp(sigma=1, l=2)(x,y) + white_noise_cov_func(x,y)
-    )
+        mu=lambda x: 0.,
+        k=kernel)
 
-    num_samples = 5
+    gaussian_process.represent_prior(ax=axes[0], num_samples=num_samples, color=color)
     mu, cov = gaussian_process.get_posterior(Xp=Xp, Xo=Xo, Yo=Yo)
     y = np.random.multivariate_normal(mean=mu, cov=cov, size=num_samples)
     for i in range(num_samples):
-        ax.plot(Xp, y[i,:])
-    ax.plot(Xo, Yo, 'x', markeredgecolor='r',  markeredgewidth=2, markersize=10)
+        axes[1].plot(Xp, y[i,:], color=color)
+    axes[1].plot(Xo, Yo, 'x', markeredgecolor=color,  markeredgewidth=2, markersize=10)
+    std = np.sqrt(np.diag(cov))  # Extract standard deviation
+    axes[1].fill_between(Xp, mu - 2 * std, mu + 2 * std, color='gray', alpha=0.3, linewidth=0.1)  # Shaded region
+    axes[1].plot(Xp, mu, 'k', lw=1)  # Plot mean
+    axes[0].set_title(f"{num_samples} samples")
+    axes[1].set_title(f"{num_observations} observations")
+    
+    gaussian_process_with_noise = gp.GaussianProcess(
+        mu=lambda x: 0.,
+        k=lambda x,y: kernel(x,y) + white_noise_cov_func(x,y)
+    )
+
+    gaussian_process_with_noise.represent_prior(ax=axes[2], num_samples=num_samples, color=color)
+    mu, cov = gaussian_process_with_noise.get_posterior(Xp=Xp, Xo=Xo, Yo=Yo)
+    y = np.random.multivariate_normal(mean=mu, cov=cov, size=num_samples)
+    for i in range(num_samples):
+        axes[3].plot(Xp, y[i,:], color=color)
+    axes[3].plot(Xo, Yo, 'x', markeredgecolor=color,  markeredgewidth=2, markersize=10)
+    std = np.sqrt(np.diag(cov))  # Extract standard deviation
+    axes[3].fill_between(Xp, mu - 2 * std, mu + 2 * std, color='gray', alpha=0.3, linewidth=0.1)  # Shaded region
+    axes[3].plot(Xp, mu, 'k', lw=1)  # Plot mean
+    axes[2].set_title(f"with noise - {num_samples} samples")
+    axes[3].set_title(f"with noise - {num_observations} observations")
+    for ax in axes:
+        ax.set_xticks([])
+        ax.set_yticks([])
 
 def gaussian_reg_noise():
-    fig, axes = plt.subplots(2,2,figsize=(19.2,10.8))
-    axes = axes.ravel()
+    fig, axes = plt.subplots(4,4,figsize=(15,10.8))
     for i, n in enumerate([5, 10, 50, 100]):
-        gaussian_process_regression_white_noise(num_observations=n, ax=axes[i], white_noise=0.1)
+        gaussian_process_regression_white_noise(axes=axes[i,:], num_observations=n, num_samples=3, noise_data=0., white_noise=0.1, kernel=gp.squared_exp(sigma=1, l=1))
     plt.show()
 
-def gaussian_reg_noise2():
-    fig, axes = plt.subplots(2,2,figsize=(19.2,10.8))
-    axes = axes.ravel()
-    for i, n in enumerate([5, 10, 50, 100]):
-        gaussian_process_regression_white_noise(num_observations=n, ax=axes[i], white_noise=0.5)
-    plt.show()
 
 if __name__ == "__main__":
     functions = [
         multivariate_normal,
         test_gaussian_process, gaussian_reg,
-        gaussian_reg_noise, gaussian_reg_noise2
+        gaussian_reg_noise,
 
     ]
     if len(sys.argv) !=2:
