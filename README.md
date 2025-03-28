@@ -17,8 +17,10 @@
 - [Univariate Sampling Techniques](01-machine-learning/01-stats/03-univariate-sampling-techniques/main.ipynb)
 - [Decision Tree](01-machine-learning/04-decision-tree/main.ipynb)
 - [Naive Bayes](01-machine-learning/01-stats/04-naives-bayes/main.ipynb)
-- [Gaussian Process](01-machine-learning/01-stats/06-gaussian-process/main.ipynb)
-- [Bayesian inference](01-machine-learning/01-stats/07-bayesian-inference/main.ipynb)
+- [Gaussian Processes](01-machine-learning/01-stats/06-gaussian-process/main.ipynb)
+- [Bayesian Inference](01-machine-learning/01-stats/07-bayesian-inference/main.ipynb)
+- [1D Convolutional Neural Network VS Fully Connected Network](04-cnn/01-mnist-conv1d/main.ipynb)
+- [Dropout](03-optimization-and-regularization/11-dropout/main.ipynb)
 
 [Neural Networks](#neural-networks)
 - [Shallow Neural Network](02-neural-networks/01-shallow-neural-network/main.ipynb)
