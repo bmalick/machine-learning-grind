@@ -19,7 +19,6 @@
 - [Naive Bayes](01-machine-learning/01-stats/04-naives-bayes/main.ipynb)
 - [Gaussian Processes](01-machine-learning/01-stats/06-gaussian-process/main.ipynb)
 - [Bayesian Inference](01-machine-learning/01-stats/07-bayesian-inference/main.ipynb)
-- [Dropout](03-optimization-and-regularization/11-dropout/main.ipynb)
 
 
 [Neural Networks](#neural-networks)
@@ -27,6 +26,8 @@
 - [Bias & Variance](02-neural-networks/02-deep-neural-network/01-bias-variance/main.ipynb)
 
 [Optimization and Regularization](#optimization-and-regularization)
+- [Weight Decay](03-optimization-and-regularization/10-weights-decay/main.ipynb)
+- [Dropout](03-optimization-and-regularization/11-dropout/main.ipynb)
 
 [Computer Vision](#computer-vision)
 - [1D Convolutional Neural Network VS Fully Connected Network](04-cnn/01-mnist-conv1d/main.ipynb)
@@ -34,6 +35,7 @@
 
 [Natural Language Processing](#natural-language-processing)
 - [Introduction: tokenization, bag of words/ngrams, tfidf](11-nlp/01-introduction/main.ipynb)
+- [Language modeling](11-nlp/02-language-modeling/main.ipynb)
 
 [Time Series](#time-series)
 
