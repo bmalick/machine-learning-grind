@@ -27,12 +27,10 @@ The figure below illustrates a DAG and a non-DAG:
 ---
 
 **Definition (Bayesian network)**  
-A DAG whose vertices $\mathbf{X} = \{X_i \mid 1 \leq i \leq n\}$ are random variables is a Bayesian network if and only if the joint distribution over $\mathbf{X}$ is of the form:
+A DAG whose vertices $\mathbf{X} = \{X_i|1 \leq i \leq n\}$ are random variables is a Bayesian network if and only if the joint distribution over $\mathbf{X}$ is of the form:
 
 $$
-\begin{equation}
-p(x_1, \dots, x_n) = \prod_{i=1}^{n} p(x_i \mid \text{parents}(x_i))
-\end{equation}
+p(x_1, \dots, x_n) = \prod_{i=1}^{n} p(x_i|\text{parents}(x_i))
 $$
 
 Not every model necessarily has a Bayesian Network (BN) representation, but many probabilistic models can be structured as a BN if they satisfy certain conditions. The fewer arcs, the more independent relationships.
@@ -69,18 +67,18 @@ We are interested in the joint probability $P(T, J, R, S)$. The order of variabl
 $$
 \begin{align}
 P(T, J, R, S)
-&= P(T \mid J, R, S) \cdot P(J, R, S) \\\\
-&= P(T \mid J, R, S) \cdot P(J \mid R, S) \cdot P(R, S) \\\\
-&= P(T \mid J, R, S) \cdot P(J \mid R, S) \cdot P(R \mid S) \cdot P(S)
+&= P(T|J, R, S) \cdot P(J, R, S) \\\\
+&= P(T|J, R, S) \cdot P(J|R, S) \cdot P(R, S) \\\\
+&= P(T|J, R, S) \cdot P(J|R, S) \cdot P(R|S) \cdot P(S)
 \end{align}
 $$
 
 Since each variable is binary, we naively have to specify $2^4 = 16$ states.  
 However, using normalization, we reduce this number.
 
-- $P(T \mid J, R, S)$: 8 values (normalization gives the other 8)  
-- $P(J \mid R, S)$: 4 values  
-- $P(R \mid S)$: 2 values  
+- $P(T|J, R, S)$: 8 values (normalization gives the other 8)  
+- $P(J|R, S)$: 4 values  
+- $P(R|S)$: 2 values  
 - $P(S)$: 1 value  
 
 Total: **15 values**
@@ -94,32 +92,28 @@ We often know constraints of the system. This leads to making **conditional inde
 ### Example
 
 For example, in the example of wet grass, we may assume that Tracy's grass being wet depends only directly on whether or not it has been raining and whether or not the sprinkler was on.  
-That is, we write:  
+That is, we write:
+
 $$
-\begin{equation}
-P(T \mid J, R, S) = P(T \mid R, S)
-\end{equation}
+P(T|J, R, S) = P(T|R, S)
 $$
 
 Since whether or not Jack's grass is wet is influenced only directly by whether or not it has been raining, we write:  
+
 $$
-\begin{equation}
-P(J \mid R, S) = P(J \mid R)
-\end{equation}
+P(J|R, S) = P(J|R)
 $$
 
 Since the rain is not directly influenced by the sprinkler, we also have:  
+
 $$
-\begin{equation}
-P(R \mid S) = P(R)
-\end{equation}
+P(R|S) = P(R)
 $$
 
 This means our model now simplifies to:  
+
 $$
-\begin{equation}
-P(T, J, R, S) = P(T \mid R, S) \cdot P(J \mid R) \cdot P(R) \cdot P(S)
-\end{equation}
+P(T, J, R, S) = P(T|R, S) \cdot P(J|R) \cdot P(R) \cdot P(S)
 $$
 
 We can represent this condition graphically as in the figure below.
@@ -140,9 +134,7 @@ To complete the model, we need to numerically specify the values of each **condi
 Number and cardinality of parents mostly determine the model complexity, e.g., in the discrete case:
 
 $$
-\begin{equation}
 \text{number of free params} = \sum_{i=1}^{n} (|V_i| - 1) \prod_{V \in \text{parent}(V_i)} |V|
-\end{equation}
 $$
 
 ### Example: Wrestling Club
@@ -178,18 +170,17 @@ But this is still not great because with insufficient data to estimate all the p
 One solution is to use **continuous random variables** and assume parameterized distributions.
 
 For example:  
+
 $$
-\begin{equation}
-H \mid G = g \sim \mathcal{N}(\mu_g, \sigma_g^2)
-\end{equation}
+H|G = g \sim \mathcal{N}(\mu_g, \sigma_g^2)
 $$  
+
 This involves 4 parameters: $\mu_m, \sigma_m^2, \mu_f, \sigma_f^2$ (m for male and f for female).
 
 For continuous parents, introduce parameterized dependency with them. For instance:  
+
 $$
-\begin{equation}
-W \mid G = g, H = h, M = m \sim \mathcal{N}(\mu_{g,m}^0 + \mu_{g,m}^0 h, \sigma_{g,m}^{2^0} + \sigma_{g,m}^{2^0} h)
-\end{equation}
+W|G = g, H = h, M = m \sim \mathcal{N}(\mu_{g,m}^0 + \mu_{g,m}^0 h, \sigma_{g,m}^{2^0} + \sigma_{g,m}^{2^0} h)
 $$
 
 This involves **16 parameters**: $\mu_{g,m}^0, \sigma_{g,m}^{2^0}$ for $g \in \{m,f\}$ and $m \in \{y,n\}$ (where $y$ stands for yes and $n$ for no).
@@ -205,22 +196,18 @@ Now that we've defined a model, we can perform inference.
 > Let's come back to the wet grass example and derive the probability that the sprinkler was on overnight, given that Tracey's grass is wet:  
 >  
 > $$
-> \begin{equation}
 > p(S = 1 | T = 1) = \frac{p(S = 1, T = 1)}{p(T = 1)}  
 > = \frac{\sum_{J,R} p(T = 1, J, R, S = 1)}{\sum_{J,R,S} p(T = 1, J, R, S)}  
 > = \frac{\sum_{J,R} p(J|R)p(T = 1|R, S = 1)p(R)p(S = 1)}{\sum_{J,R,S} p(J|R)p(T = 1|R, S)p(R)p(S)}  
 > = \frac{\sum_{R} p(T = 1|R, S = 1)p(R)p(S = 1)}{\sum_{R,S} p(T = 1|R, S)p(R)p(S)}
-> \end{equation}
 > $$
 >
 > Now let us derive the probability that Tracey's sprinkler was on overnight, given that her grass is wet **and** that Jack’s grass is also wet, i.e., $p(S = 1 | T = 1, J = 1)$:  
 >
 > $$
-> \begin{equation}
 > p(S = 1 | T = 1, J = 1) = \frac{p(S = 1, T = 1, J = 1)}{p(T = 1, J = 1)}  
 > = \frac{\sum_{R} p(T = 1, J = 1, R, S = 1)}{\sum_{R,S} p(T = 1, J = 1, R, S)}  
 > = \frac{\sum_{R} p(J = 1|R)p(T = 1|R, S = 1)p(R)p(S = 1)}{\sum_{R,S} p(J = 1|R)p(T = 1|R, S)p(R)p(S)}
-> \end{equation}
 > $$
 
 ---
@@ -234,24 +221,19 @@ A Bayesian network (BN) corresponds to a set of conditional independence assumpt
 Let $\mathcal{X}$, $\mathcal{Y}$, and $\mathcal{Z}$ be sets of random variables. We say that $\mathcal{X}$ is conditionally independent of $\mathcal{Y}$ given $\mathcal{Z}$, denoted:
 
 $$
-\begin{equation}
 \mathcal{X} \perp \mathcal{Y} | \mathcal{Z}
-\end{equation}
 $$
 
 if and only if:
 
-$$\begin{equation}
+$$
 P(\mathcal{X}, \mathcal{Y} | \mathcal{Z}) = P(\mathcal{X} | \mathcal{Z}) P(\mathcal{Y} | \mathcal{Z})
-\end{equation}
 $$
 
 If they are not conditionally independent, we write:
 
 $$
-\begin{equation}
 \mathcal{X} \not\perp \mathcal{Y} | \mathcal{Z}
-\end{equation}
 $$
 
 ### Definition: Collider
@@ -281,6 +263,7 @@ When variable $Z$ **is observed**, we use:
 <p align="center">
   <img src="images/rules-of-independence2.png" alt="Rules of independence when Z is observed" width="45%">
 </p>
+
 ---
 
 ### Definition: d-Connection and d-Separation
@@ -300,9 +283,7 @@ Alternatively, a path $U$ is **blocked** if there's a node $w$ such that:
 If all paths between $\mathcal{X}$ and $\mathcal{Y}$ are blocked, then:
 
 $$
-\begin{equation}
 \mathcal{X} \perp \mathcal{Y} | \mathcal{Z}
-\end{equation}
 $$
 
 <p align="center">
@@ -330,14 +311,12 @@ Although real-world phenomena can often be modeled causally, BNs mostly represen
 
 In this section, we illustrate how to compute the MLE for CPT. We demonstrate the property that the MLE of a Bayesian network is the union of MLE applied to BN factors (i.e., CPT) separately.
 
-Let a BN whose variables are $\mathcal{X} = (X_1, \dots, X_m)$, $\theta_i$ parameters of $p_{X_i|\text{parents}(X_i)}$, $\mathcal{D} = \{x_j\}_{1 \leq j \leq n}$ be a set of i.i.d samples with $x_j = (x_{1j}, \dots, x_{mj})$.
+Let a BN whose variables are $\mathcal{X} = (X_1, \dots, X_m)$, $\theta_i$ parameters of $p_{X_i|\text{parents}(X_i)}$, $\mathcal{D} = \{ x_j | 1 \leq j \leq n \}$ be a set of i.i.d samples with $x_j = (x_{1j}, \dots, x_{mj})$.
 
 To find the MLE of the parameters in a Bayesian network, we differentiate the log-likelihood function with respect to each parameter and set it to zero, leading to the following condition:
 
 $$
-\begin{equation}
 \frac{\partial \mathcal{L}(\mathcal{D}; \theta)}{\partial \theta} = 0 \Leftrightarrow \forall k, \quad \frac{\partial \mathcal{L}(\mathcal{D}; \theta_k)}{\partial \theta_k} = 0
-\end{equation}
 $$
 
 We have:
@@ -352,9 +331,7 @@ $$
 Thus,
 
 $$
-\begin{equation}
 \log p(\mathcal{D}|\theta) = \sum_{j=1}^n \sum_{i=1}^m \log p_{X_i|\text{parents}(X_i), \theta_i}(x_{ij})
-\end{equation}
 $$
 
 We have $\forall k$:
@@ -370,8 +347,6 @@ $$
 \end{align}
 $$
 
-Then equation (25) finishes the demonstration.
-
 ## Bayesian inference in Bayesian networks
 
 Here we demonstrate that if priors of BN factors are independent, posteriors of BN factors are also independent.
@@ -379,9 +354,7 @@ Here we demonstrate that if priors of BN factors are independent, posteriors of 
 We suppose that the priors of the BN factors are independent:
 
 $$
-\begin{align}
 p(\theta)=\prod_{i=1}^m p(\theta_i)
-\end{align}
 $$
 
 Then,
@@ -403,9 +376,7 @@ Hence, Bayesian inference can be applied to variables one after the other.
 Naive Bayes is a generative approach which assumes the features $X_i$ are conditionally independent given the class label:
 
 $$
-\begin{align}
-\forall i \text{,} \forall j \text{,} X_i \perp X_j \mid Y
-\end{align}
+\forall i \text{,} \forall j \text{,} X_i \perp X_j|Y
 $$
 
 We illustrate the Naive Bayes graph model in the figure below.
@@ -419,44 +390,31 @@ We illustrate the Naive Bayes graph model in the figure below.
 This allows us to write the class conditional density as a product of one-dimensional densities:
 
 $$
-\begin{align}
 p(X,Y=c)=p(y=c) \prod_{i=1}^m p(x_i|y=c)
-\end{align}
 $$
 
 With parameters $\theta$, we have:
 
 $$
-\begin{align}
 p(X,Y=c, \theta)=p(y=c, \theta) \prod_{i=1}^m p(x_i|y=c, \theta_{ic})
-\end{align}
 $$
 
 The model is called **naive** since we do not expect the features to be independent, even conditional on the class label. However, even if the naive Bayes assumption is not true, it often results in classifiers that work well. One reason for this is that the model is quite simple (it only has $O(C \times m)$ parameters, for $C$ classes and $m$ features), and hence it is relatively immune to overfitting.
 
 We compute the prediction of $Y$ for a novel attribute $X^*$ as follows:
 
-$$
-\begin{align}
-p(Y|X^*, \theta)=\frac{p(X^*|Y, \theta)}{p(X^*|\theta)}p(Y|\theta)
-\propto \left(\prod_{i=1}^m p(X_i^*|Y, \theta) \right) \times p(Y|\theta)
-\end{align}
-$$
+$$ p(Y | X^*, \theta) = \frac{p(X^* | Y, \theta)}{p(X^* | \theta)} p(Y | \theta) \propto \left( \prod_{i=1}^m p(X_i^* | Y, \theta) \right) \times p(Y | \theta) $$
 
 This leads to:
 
 $$
-\begin{align}
 p(Y=c|X^*, \theta) \propto \left(\prod_{i=1}^m p(X_i^*|Y=c, \theta) \right) \times p(Y=c|\theta)
-\end{align}
 $$
 
 - In the case of **real-valued features**, we can use the Gaussian distribution:
 
   $$
-  \begin{align}
   p(X|Y=c,\theta)=\prod_{i=1}^m \mathcal{N}(X_i|\mu_{ic}, \sigma_{ic}^2)
-  \end{align}
   $$
 
   where $\mu_{ic}$ is the mean of feature $j$ in objects of class $c$, and $\sigma_{ic}^2$ is its variance.
@@ -464,9 +422,7 @@ $$
 - In the case of **binary features**, $x_j \in \{0, 1\}$, we can use the Bernoulli distribution:
 
   $$
-  \begin{align}
   p(X|Y=c,\theta)=\prod_{i=1}^m \text{Ber}(x_j|\mu_{ic})
-  \end{align}
   $$
 
   where $\mu_{ic}$ is the probability that feature $j$ occurs in class $c$.
@@ -474,9 +430,7 @@ $$
 - In the case of **categorical features**, we can use the multinoulli distribution:
 
   $$
-  \begin{align}
   p(X|Y=c,\theta)=\prod_{i=1}^m \text{Cat}(X_i|\mu_{ic})
-  \end{align}
   $$
 
   where $\mu_{ic}$ is the histogram over the $m$ possible values for $X_i$ in class $c$.
@@ -495,10 +449,8 @@ In the **discrete case**, with categorical features, parameters are:
 The probability for a single data case is given by:
 
 $$
-\begin{align}
 p(x_i, y_i | \theta) = p(y_i | \pi) \prod_j p(x_{ij} | \theta_j) = 
 \prod_c \pi_c^{\mathbf{1}(y_i = c)} \prod_j \prod_c p(x_{ij} | \theta_{jc})^{\mathbf{1}(y_i = c)}
-\end{align}
 $$
 
 Hence, the log-likelihood is given by:
@@ -518,25 +470,19 @@ We see that this expression decomposes into a series of terms, one concerning $\
 The MLE for the class prior is given by:
 
 $$
-\begin{align}
 \hat{\pi}_c = \hat{p}(Y=c) = \frac{N_c}{N}
-\end{align}
 $$
 
 The MLE for the likelihood depends on the type of distribution we choose to use for each feature. In this case, the MLE becomes:
 
 $$
-\begin{align}
 \hat{\theta}_{ic}(v) = p(X_i=v|Y=c) = \frac{N_{ic}}{N_c}
-\end{align}
 $$
 
 where
 
 $$
-\begin{align}
 N_{ic}(v)=\sum_{j} \mathbf{1}(y_j=c)\mathbf{1}(x_{ij}=v)
-\end{align}
 $$
 
 It is extremely simple to implement this model fitting procedure. The Naive Bayes algorithm takes $O(nm)$ time. The method is easily generalized to handle features of mixed type. This simplicity is one reason the method is so widely used.
