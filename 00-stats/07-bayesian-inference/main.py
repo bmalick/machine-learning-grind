@@ -17,7 +17,7 @@ def plot_pdfs(n0, n1, alpha, beta, ax):
     posterior = scipy.stats.beta.pdf(x, alpha+n1, beta+n0)
     ax.plot(x, prior, "black", label=f"prior Beta({alpha},{beta})")
     ax.plot(x, likelihood, "r", linestyle="dotted", label=f"likelihood Beta({n1+1},{n0+1})")
-    ax.plot(x, posterior, "b--", label=f"prior Beta({alpha+n1},{beta+n0})")
+    ax.plot(x, posterior, "b--", label=f"posterior Beta({alpha+n1},{beta+n0})")
     ax.legend()
     ax.set_title(f"n0={n0}, n1={n1}, alpha={alpha}, beta={beta}")
 
