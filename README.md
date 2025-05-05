@@ -16,7 +16,7 @@
 - [Monte Carlo Approximation](00-stats/02-monte-carlo)
 - [Univariate Sampling Techniques](00-stats/03-univariate-sampling-techniques)
 - [Decision Tree](01-machine-learning/03-decision-tree)
-- [Naive Bayes](00-stats/04-naives-bayes)
+- [Bayesian Networks](00-stats/04-bayesian-networks)
 - [Gaussian Processes](00-stats/06-gaussian-process)
 - [Bayesian Inference](00-stats/07-bayesian-inference)
 
