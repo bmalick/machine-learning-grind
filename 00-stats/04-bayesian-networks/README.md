@@ -17,11 +17,11 @@ A **directed acyclic graph** (DAG) is a graph $G$ with directed edges on each li
 The figure below illustrates a DAG and a non-DAG:
 
 <p align="center">
-  <img src="dag.png" alt="This is a DAG" width="25%">
+  <img src="images/dag.png" alt="This is a DAG" width="25%">
 </p>
 
 <p align="center">
-  <img src="not-dag.png" alt="This is not a DAG" width="25%">
+  <img src="images/not-dag.png" alt="This is not a DAG" width="25%">
 </p>
 
 ---
@@ -125,7 +125,7 @@ $$
 We can represent this condition graphically as in the figure below.
 
 <p align="center">
-  <img src="wet-grass.png" alt="Bayesian network for wet grass example" width="25%">
+  <img src="images/wet-grass.png" alt="Bayesian network for wet grass example" width="25%">
 </p>
 
 This reduces the number of values that we need to specify to:  
@@ -150,11 +150,11 @@ $$
 Let's compute the number of free parameters from the wrestling club example. The DAG is given in the figure below.
 
 <p align="center">
-  <img src="wrestling-club.png" alt="Information about wrestling club example" width="50%">
+  <img src="images/wrestling-club.png" alt="Information about wrestling club example" width="50%">
 </p>
 
 <p align="center">
-  <img src="wrestling-club-dag.png" alt="BN for wrestling club example" width="25%">
+  <img src="images/wrestling-club-dag.png" alt="BN for wrestling club example" width="25%">
 </p>
 
 | Variable name | Number of values | Number of parent value combinations | Size of CPT      |
@@ -262,7 +262,7 @@ In a Bayesian network, a **collider** is a node where two or more arrows collide
 - In graphs (b) and (d), $Z$ is a **collider**: $X \not\perp Y | Z$.
 
 <p align="center">
-  <img src="collider.png" alt="Collider and rules" width="30%">
+  <img src="images/collider.png" alt="Collider and rules" width="30%">
 </p>
 
 
@@ -271,7 +271,7 @@ In a Bayesian network, a **collider** is a node where two or more arrows collide
 When variable $Z$ is **not observed**, the following diagram explains independence:
 
 <p align="center">
-  <img src="rules-of-independence1.png" alt="Rules of independence when Z is not observed" width="45%">
+  <img src="images/rules-of-independence1.png" alt="Rules of independence when Z is not observed" width="45%">
 </p>
 
 ### Independence Rules (Observed $Z$)
@@ -279,7 +279,7 @@ When variable $Z$ is **not observed**, the following diagram explains independen
 When variable $Z$ **is observed**, we use:
 
 <p align="center">
-  <img src="rules-of-independence2.png" alt="Rules of independence when Z is observed" width="45%">
+  <img src="images/rules-of-independence2.png" alt="Rules of independence when Z is observed" width="45%">
 </p>
 ---
 
@@ -306,7 +306,7 @@ $$
 $$
 
 <p align="center">
-  <img src="blocking-config.png" alt="Blocking configuration" width="45%">
+  <img src="images/blocking-config.png" alt="Blocking configuration" width="45%">
 </p>
 
 If $\mathcal{X}$ and $\mathcal{Y}$ are d-separated by $\mathcal{Z}$, they are conditionally independent in **all** distributions compatible with the DAG.
@@ -411,7 +411,7 @@ $$
 We illustrate the Naive Bayes graph model in the figure below.
 
 <p align="center">
-  <img src="naive-bayes.png" alt="Naive Bayes graph model" width="45%">
+  <img src="images/naive-bayes.png" alt="Naive Bayes graph model" width="45%">
 </p>
 
 *Naive Bayes graph model: $k-1+2km$ parameters*
