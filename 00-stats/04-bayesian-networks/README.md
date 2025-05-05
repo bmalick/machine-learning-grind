@@ -303,7 +303,7 @@ If $\mathcal{X}$ and $\mathcal{Y}$ are d-separated by $\mathcal{Z}$, they are co
 In BNs, a variable $A$ is (imperfectly) said to cause $B$ if:
 
 - $A$ and $B$ are strongly dependent conditionally on all other variables.
-- $A$ temporally precedes $B$ (unless $B$ anticipates $A).
+- $A$ temporally precedes $B$ (unless $B$ anticipates $A$).
 
 Although real-world phenomena can often be modeled causally, BNs mostly represent **statistical dependencies**, not **causal relationships**.
 
@@ -385,7 +385,7 @@ We illustrate the Naive Bayes graph model in the figure below.
   <img src="images/naive-bayes.png" alt="Naive Bayes graph model" width="45%">
 </p>
 
-*Naive Bayes graph model: $k-1+2km$ parameters*
+Naive Bayes graph model: $k-1+2km$ parameters
 
 This allows us to write the class conditional density as a product of one-dimensional densities:
 
@@ -401,37 +401,39 @@ $$
 
 The model is called **naive** since we do not expect the features to be independent, even conditional on the class label. However, even if the naive Bayes assumption is not true, it often results in classifiers that work well. One reason for this is that the model is quite simple (it only has $O(C \times m)$ parameters, for $C$ classes and $m$ features), and hence it is relatively immune to overfitting.
 
-We compute the prediction of $Y$ for a novel attribute $X^*$ as follows:
+We compute the prediction of $Y$ for a novel attribute $X^\ast$ as follows:
 
-$$ p(Y | X^*, \theta) = \frac{p(X^* | Y, \theta)}{p(X^* | \theta)} p(Y | \theta) \propto \left( \prod_{i=1}^m p(X_i^* | Y, \theta) \right) \times p(Y | \theta) $$
+$$
+p(Y | X^\ast, \theta) = \frac{p(X^\ast | Y, \theta)}{p(X^\ast | \theta)} p(Y | \theta) \propto \left( \prod_{i=1}^m p(X_i^\ast | Y, \theta) \right) \times p(Y | \theta)
+$$
 
 This leads to:
 
 $$
-p(Y=c|X^*, \theta) \propto \left(\prod_{i=1}^m p(X_i^*|Y=c, \theta) \right) \times p(Y=c|\theta)
+p(Y=c|X^\ast, \theta) \propto \left(\prod_{i=1}^m p(X_i^\ast|Y=c, \theta) \right) \times p(Y=c|\theta)
 $$
 
 - In the case of **real-valued features**, we can use the Gaussian distribution:
 
-  $$
-  p(X|Y=c,\theta)=\prod_{i=1}^m \mathcal{N}(X_i|\mu_{ic}, \sigma_{ic}^2)
-  $$
+$$
+p(X|Y=c,\theta)=\prod_{i=1}^m \mathcal{N}(X_i|\mu_{ic}, \sigma_{ic}^2)
+$$
 
-  where $\mu_{ic}$ is the mean of feature $j$ in objects of class $c$, and $\sigma_{ic}^2$ is its variance.
+where $\mu_{ic}$ is the mean of feature $j$ in objects of class $c$, and $\sigma_{ic}^2$ is its variance.
 
 - In the case of **binary features**, $x_j \in \{0, 1\}$, we can use the Bernoulli distribution:
 
-  $$
-  p(X|Y=c,\theta)=\prod_{i=1}^m \text{Ber}(x_j|\mu_{ic})
-  $$
+$$
+p(X|Y=c,\theta)=\prod_{i=1}^m \text{Ber}(x_j|\mu_{ic})
+$$
 
   where $\mu_{ic}$ is the probability that feature $j$ occurs in class $c$.
 
 - In the case of **categorical features**, we can use the multinoulli distribution:
 
-  $$
-  p(X|Y=c,\theta)=\prod_{i=1}^m \text{Cat}(X_i|\mu_{ic})
-  $$
+$$
+p(X|Y=c,\theta)=\prod_{i=1}^m \text{Cat}(X_i|\mu_{ic})
+$$
 
   where $\mu_{ic}$ is the histogram over the $m$ possible values for $X_i$ in class $c$.
 
@@ -476,7 +478,7 @@ $$
 The MLE for the likelihood depends on the type of distribution we choose to use for each feature. In this case, the MLE becomes:
 
 $$
-\hat{\theta}_{ic}(v) = p(X_i=v|Y=c) = \frac{N_{ic}}{N_c}
+\hat{\theta}_{ic}(v) = p(X_i=v|Y=c) = \frac{N _{ic}}{N_c}
 $$
 
 where
