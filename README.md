@@ -18,7 +18,7 @@
 - [Decision Tree](01-machine-learning/04-decision-tree/main.ipynb)
 - [Naive Bayes](01-machine-learning/01-stats/04-naives-bayes/main.ipynb)
 - [Gaussian Processes](01-machine-learning/01-stats/06-gaussian-process/main.ipynb)
-- [Bayesian Inference](01-machine-learning/01-stats/07-bayesian-inference/main.ipynb)
+- [Bayesian Inference](01-machine-learning/01-stats/07-bayesian-inference/README.md)
 
 
 [Neural Networks](#neural-networks)
