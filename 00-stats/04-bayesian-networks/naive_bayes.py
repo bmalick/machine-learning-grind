@@ -5,18 +5,6 @@ from typing import Tuple
 
 # TODO: add message length feature; view distribution and estimate it with poisson distribution
 
-def mle_gaussian(x: np.ndarray) -> Tuple[float, float]:
-    """Maximum likelihood estimation for Gaussian distribution"""
-    if isinstance(x, list): x = np.array(x)
-    mu = x.mean()
-    sigma = np.sqrt(((x-mu)**2).mean())
-    return mu, max(sigma, 1e-10)
-
-def mle_bernoulli(x: np.ndarray) -> float:
-    """Maximum likelihood estimation for Bernoulli distribution"""
-    if isinstance(x, list): x = np.array(x)
-    return np.mean(x)
-
 def accuracy(y_pred: np.ndarray, y_true: np.ndarray) -> float:
     return (y_pred==y_true).mean()
 
@@ -34,72 +22,101 @@ def cross_validation(model, X: np.ndarray, y: np.ndarray, cv: int) -> np.ndarray
         scores.append(accuracy(y_pred=model.predict(X_test), y_true=y_test))
     return np.array(scores)
 
-
-class NaiveBayesFromScratch:
-    def __init__(self, distribution: str = "bernoulli"):
-        assert distribution in ["gaussian", "bernoulli"]
-        self.distribution = distribution
-
-    def get_py(self, y: np.ndarray) -> None:
-        """Calculate prior probabilities"""
-        self.labels = np.unique(y).tolist()
-        self.py = {l: (y==l).sum()/len(y) for l in self.labels}
-
-    def estimate_distribution_params(self, X: np.ndarray, y: np.ndarray) -> None:
-        """Estimate distribution parameters for each feature and class"""
-        mle_estimator = mle_bernoulli if self.distribution=="bernoulli" else mle_gaussian
-        self.theta = {}
-        for label in self.labels:
-            mask = (y == label)
-            X_class = X[mask]
-            
-            if self.distribution == "gaussian":
-                # Calculate parameters for each feature
-                params = [mle_estimator(X_class[:, i]) for i in range(X.shape[1])]
-                self.theta[label] = list(zip(*params))
-            else:
-                self.theta[label] = [mle_estimator(X_class[:, i]) for i in range(X.shape[1])]
-
+class CategoricalNaiveBayes:
     def fit(self, X: np.ndarray, y: np.ndarray):
-        self.get_py(y)
-        self.estimate_distribution_params(X, y)
-        return self
+        n_samples, feature_dim = X.shape
+        self.classes = list(set(y))
+        self.features = set()
+        for i in range(n_samples):
+            for xi in X[i]:
+                self.features.add(xi)
 
-    def get_proba(self, xi: float, yi: int, feature_idx: int) -> float:
-        """Calculate P(x_i|y) for a single feature value"""
-        if self.distribution == "gaussian":
-            mu, sigma = self.theta[yi][0][feature_idx], self.theta[yi][1][feature_idx]
-            return np.exp(-(xi-mu)**2 / (2*sigma**2)) / (np.sqrt(2*np.pi) * sigma)
-        elif self.distribution == "bernoulli":
-            p = self.theta[yi][feature_idx]
-            return p if xi==1 else 1-p
-        else: raise ValueError("This distribution is not taken account.")
-    
-    def predict_proba(self, X: np.ndarray) -> np.ndarray:
-        if len(X.shape) == 1:
-            X = X.reshape(1, -1)
+        self.num_features = len(self.features)
+        self.num_classes = len(self.classes)
+        self.feature_dim = feature_dim
+
+        self.class_priors = np.array([(y==c).sum() / n_samples for c in self.classes]) # pi_c
+        self.mles = np.zeros((feature_dim, self.num_classes, self.num_features)) # theta_jc
+
+        for j in range(feature_dim):
+            for c in range(len(self.classes)):
+                Nc = (y==self.classes[c]).sum()
+                for v in range(self.num_features):
+                    Njcv = ((X[:, j]==v) & (y==self.classes[c])).sum()
+                    self.mles[j][c][v] = Njcv / Nc
+
+    def predict_proba(self, x: np.ndarray) -> np.ndarray:
+        if len(x.shape)==1:
+            probs = np.log(self.class_priors) # log trick
+
+            for c_idx, c in enumerate(self.classes):
+                for j in range(len(x)):
+                    xj = x[j]
+                    # probs[c_idx][j] = self.mles[j][c_idx][xj]
+                    probs[c_idx] += np.log(self.mles[j][c_idx][xj] + 1.e-10) # log trick
             
-        n_samples = X.shape[0]
-        n_classes = len(self.labels)
-        log_probas = np.zeros((n_samples, n_classes))
+            # probs = self.class_priors * np.prod(probs, axis=1)
+            # return print(probs / probs.sum())
 
-        # Calculate log probabilities to avoid numerical underflow
-        log_probas += np.log([self.py[label] for label in self.labels])
+            probs = probs - np.max(probs) # max trick
+            probs = np.exp(probs) # exp trick
+            probs /= probs.sum() # sum trick
+            return probs
+        else:
+            return np.array([self.predict_proba(xi) for xi in x])
 
-        for feature_idx in range(X.shape[1]):
-            feature_probas = np.array([[self.get_proba(x[feature_idx], label, feature_idx)
-                                        for label in self.labels]
-                                        for x in X])
-            # Add small epsilon to avoid log(0)
-            log_probas += np.log(np.maximum(feature_probas, 1e-10))
-                
-        # Convert log probabilities back to probabilities
-        probas = np.exp(log_probas - np.max(log_probas, axis=1, keepdims=True)) # max normalization that helps prevent numerical underflow/overflow when working with probabilities
-        probas = probas / probas.sum(axis=1, keepdims=True)
-        return probas
+    def predict(self, x: np.ndarray) -> np.ndarray:
+        return np.argmax(self.predict_proba(x), axis=-1)
 
-    def predict(self, x):
-        return np.argmax(self.predict_proba(x), axis=1)
+class GaussianNaiveBayes:
+    def fit(self, X: np.ndarray, y: np.ndarray):
+        n_samples, feature_dim = X.shape
+        self.classes = list(set(y))
+        self.features = set()
+        for i in range(n_samples):
+            for xi in X[i]:
+                self.features.add(xi)
+
+        self.num_features = len(self.features)
+        self.num_classes = len(self.classes)
+        self.feature_dim = feature_dim
+
+        self.class_priors = np.array([(y==c).sum() / n_samples for c in self.classes]) # pi_c
+        self.mles = np.zeros((feature_dim, self.num_classes, 2)) # theta_jc
+
+        for j in range(feature_dim):
+            for c in range(len(self.classes)):
+                Nc = (y==self.classes[c]).sum()
+                theta = X[np.argwhere(y==self.classes[c]), j].sum() / Nc
+                sigma_square = (X[np.argwhere(y==self.classes[c]), j].sum() - theta)**2 / Nc
+                self.mles[j][c][0] = theta
+                self.mles[j][c][1] = sigma_square + 1e-10
+
+    def predict_proba(self, x: np.ndarray) -> np.ndarray:
+        if len(x.shape)==1:
+            probs = np.log(self.class_priors) # log trick
+
+            for c_idx, c in enumerate(self.classes):
+                for j in range(len(x)):
+                    xj = x[j]
+                    mu = self.mles[j][c_idx][0]
+                    sigma_square = self.mles[j][c_idx][1]
+                    p = np.exp(-(xj-mu)**2 / (2*sigma_square)) / (np.sqrt(2*np.pi*sigma_square))
+                    # probs[c_idx][j] = p
+                    probs[c_idx] += np.log(p + 1e-10)
+            
+            # probs = self.class_priors * np.prod(probs, axis=1)
+            # return print(probs / probs.sum())
+
+            probs = probs - np.max(probs) # max trick
+            probs = np.exp(probs) # exp trick
+            probs /= probs.sum() # sum trick
+            return probs
+        else:
+            return np.array([self.predict_proba(xi) for xi in x])
+
+    def predict(self, x: np.ndarray) -> np.ndarray:
+        return np.argmax(self.predict_proba(x), axis=-1)
 
 def calibration_curve_from_scratch(y_true: np.ndarray, pred_probas: np.ndarray, k: int=10):
     intervals = np.linspace(0, 1, k+1)

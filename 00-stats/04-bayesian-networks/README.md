@@ -416,43 +416,41 @@ $$
 - In the case of **real-valued features**, we can use the Gaussian distribution:
 
 $$
-p(X|Y=c,\theta)=\prod_{i=1}^m \mathcal{N}(X_i|\mu_{ic}, \sigma_{ic}^2)
+p(X|Y=c,\theta)=\prod_{j=1}^m \mathcal{N}(X_i|\theta_{jc}, \sigma_{jc}^2)
 $$
 
-where $\mu_{ic}$ is the mean of feature $j$ in objects of class $c$, and $\sigma_{ic}^2$ is its variance.
+where $\theta_{jc}$ is the mean of feature $j$ when the class label is $c$, and $\sigma_{jc}^2$ is its variance.
 
 - In the case of **binary features**, $x_j \in \{0, 1\}$, we can use the Bernoulli distribution:
 
 $$
-p(X|Y=c,\theta)=\prod_{i=1}^m \text{Ber}(x_j|\mu_{ic})
+p(X|Y=c,\theta)=\prod_{j=1}^m \text{Ber}(x_j|\theta_{jc})
 $$
 
-  where $\mu_{ic}$ is the probability that feature $j$ occurs in class $c$.
+  where $\theta_{jc}$ is the probability that feature $j$ occurs in class $c$.
 
 - In the case of **categorical features**, we can use the multinoulli distribution:
 
 $$
-p(X|Y=c,\theta)=\prod_{i=1}^m \text{Cat}(X_i|\mu_{ic})
+p(X|Y=c,\theta)=\prod_{j=1}^m \text{Cat}(X_j|\theta_{jc})
 $$
 
-  where $\mu_{ic}$ is the histogram over the $m$ possible values for $X_i$ in class $c$.
+  where $\theta_{jc}$ is the histogram over the $m$ possible values for $X_j$ in class $c$.
 
 ### Model fitting
 
 We now discuss how to train a naive Bayes classifier. This usually means computing the MLE or the MAP estimate for the parameters.
 
-In the **discrete case**, with categorical features, parameters are:
+<!-- In the **discrete case**, with categorical features, parameters are:
 
 - CPT of $Y$: class priors $(\pi_c)_{1 \leq c \leq C} = p(Y=c)$
-- CPT of $(X_i)_{1 \leq i \leq m}: p(X_i=v_i|Y=c, \theta_i)$
-
-#### Example: Learning categorical Naive Bayes using MLE
+- CPT of $(X_i)_{1 \leq i \leq m}: p(X_i=v_i|Y=c, \theta_i)$ -->
 
 The probability for a single data case is given by:
 
 $$
-p(x_i, y_i | \theta) = p(y_i | \pi) \prod_j p(x_{ij} | \theta_j) = 
-\prod_c \pi_c^{\mathbf{1}(y_i = c)} \prod_j \prod_c p(x_{ij} | \theta_{jc})^{\mathbf{1}(y_i = c)}
+p(x_i, y_i | \theta) = p(y_i | \pi) \prod_{j=1}^m p(x_{ij} | \theta_j) = 
+\prod_{c=1}^C \pi_c^{\mathbf{1}(y_i = c)} \prod_{j=1}^m \prod_{c=1}^C p(x_{ij} | \theta_{jc})^{\mathbf{1}(y_i = c)}
 $$
 
 Hence, the log-likelihood is given by:
@@ -460,7 +458,7 @@ Hence, the log-likelihood is given by:
 $$
 \begin{align}
 \log p(\mathcal{D} | \theta)
-&= \sum_{c=1}^{C} \sum_{i}\mathbf{1}(y_i = c) \log \pi_c + \sum_{j=1}^{m} \sum_{c=1}^{C} \sum_{i:y_i = c} \log p(x_{ij} | \theta_{jc}) \\
+&= \sum_{c=1}^{C} \sum_{i=1}^N \mathbf{1}(y_i = c) \log \pi_c + \sum_{j=1}^{m} \sum_{c=1}^{C} \sum_{i:y_i = c} \log p(x_{ij} | \theta_{jc}) \\
 &= \sum_{c=1}^{C} N_c \log \pi_c + \sum_{j=1}^{m} \sum_{c=1}^{C} \sum_{i:y_i = c} \log p(x_{ij} | \theta_{jc})
 \end{align}
 $$
@@ -475,17 +473,42 @@ $$
 \hat{\pi}_c = \hat{p}(Y=c) = \frac{N_c}{N}
 $$
 
-The MLE for the likelihood depends on the type of distribution we choose to use for each feature. In this case, the MLE becomes:
+The MLE for the likelihood depends on the type of distribution we choose to use for each feature.
 
-$$
-\hat{\theta}_{ic}(v) = p(X_i=v|Y=c) = \frac{N _{ic}}{N_c}
-$$
+- In the case of discrete features, we use categorical distribution and the MLE becomes:
 
-where
+  $$
+  \hat{\theta}_{jc}(v) = p(X_j=v|Y=c) = \frac{N _{jc}(v)}{N_c}
+  $$
 
-$$
-N_{ic}(v)=\sum_{j} \mathbf{1}(y_j=c)\mathbf{1}(x_{ij}=v)
-$$
+  where
+
+  $$
+  N_{jc}(v)=\sum_{i=1}^N \mathbf{1}(y_i=c)\mathbf{1}(x_{ij}=v)
+  $$
+
+- In the case of binary features, the categorical distribution becomes the Bernoulli and the MLE becomes:
+
+  $$
+  \hat{\theta}_{jc} = p(X_j=1|Y=c) = \frac{N _{jc}}{N_c}
+  $$
+
+  which is the empirical fraction of times that feature j is on in examples of class c, where
+
+  $$
+  N_{jc}=\sum_{i=1}^N \mathbf{1}(y_i=c)\mathbf{1}(x_{ij}=1)
+  $$
+
+- In the case of real-valued features, we can use a Gaussian distribution and the MLE is:
+
+  $$
+  \hat{\theta}_{jc} = \frac{1}{N_c}\sum_{i:y_i=c} x_{ij}
+  $$
+
+  $$
+  \hat{\sigma}^2_{jc} = \frac{1}{N_c} \sum_{i:y_i=c} (x_{ij}-\hat{\theta}_{jc})^2
+  $$
+
 
 It is extremely simple to implement this model fitting procedure. The Naive Bayes algorithm takes $O(nm)$ time. The method is easily generalized to handle features of mixed type. This simplicity is one reason the method is so widely used.
 
@@ -495,3 +518,48 @@ MAP and Bayesian inference are not typically useful for Naive Bayes in most case
 
 In Naive Bayes, we assume that the features are conditionally independent given the class, and thus, the likelihood of the data can be computed independently for each feature. Adding a prior distribution (as in MAP or full Bayesian inference) does not often improve the model's performance, because the parameter estimation is already fairly straightforward with MLE and does not require incorporating complex priors or posterior updates. Furthermore, in many practical applications, the computational cost of performing full Bayesian inference is not justified, especially when the data is large and the model's simplicity through MLE is already effective.
 
+### The log-sum-exp trick
+
+When working with generative classifiers or models involving probability distributions, one common challenge is numerical stability, particularly when dealing with very small probabilities. This can lead to issues like underflow or overflow, especially in high-dimensional spaces, where the likelihood function might involve the product of many small probabilities.
+
+To mitigate this, it is often beneficial to use the log of the likelihood function. Taking the logarithm of probabilities helps transform very small numbers into more manageable ones, making the computation numerically stable. This can be achieved by computing the log-likelihood:
+
+$$
+\log \mathcal{L}(\mathcal{D};\theta) = \sum_{i=1}^{n} \log \mathcal{L}(x_i;\theta)
+$$
+
+This log transformation converts the product of probabilities into a sum of logs, which is much less prone to numerical instability. The log-likelihood is often maximized in practice, as we are typically interested in finding the parameter values $\hat{\theta}_{\text{mle}}$ that maximize this quantity:
+
+$$
+\hat{\theta}_{\text{mle}} = \arg \max_{\theta} \log \mathcal{L}(\mathcal{D};\theta)
+$$
+
+This approach effectively addresses the issue of underflow by ensuring that the likelihood computation stays within a stable numerical range.
+
+While transforming the likelihood into a log-likelihood helps prevent underflow, there are still other potential numerical issues, such as overflow, which can occur when working with large numbers. In situations where the arguments of an exponential function are extremely large (either very positive or very negative), we may encounter overflow or underflow errors. For instance, consider the softmax function, which is commonly used in classification tasks to compute probabilities from logits:
+
+$$
+\hat{p}_i = \frac{\exp(z_i)}{\sum_{j=1}^{n} \exp(z_j)}
+$$
+
+Here, the numerator and denominator involve exponentiating the values of $z_i$. If the values of $z_i$ are too large or too small, the exponential function can produce values that exceed the limits of the floating-point representation, leading to overflow or underflow. For example, if $z_i$ is very large, the exponential term can become larger than the largest number representable in the system, causing overflow. Conversely, if $z_i$ is very negative, the result of the exponential term can become so small that it results in underflow.
+
+To deal with this, we can apply a technique known as the **max trick**, which involves subtracting the maximum value from all the entries before computing the exponentials:
+
+$$
+\hat{p}_i = \frac{\exp(z_i - \max_j z_j)}{\sum_{j=1}^{n} \exp(z_j - \max_k z_k)}
+$$
+
+This trick ensures that the largest exponent is zero, thus preventing overflow, while the differences between all the terms remain the same. This transformation keeps the values within a numerically stable range. Additionally, this ensures that the exponentials remain well-behaved and the probabilities do not exceed 1 or become numerically unstable.
+
+In many machine learning algorithms, especially when computing sums over exponentials of many terms, such as in Bayesian inference or softmax computations, the log-sum-exp trick is widely used. The key idea is to avoid directly computing sums in the exponential domain, which can lead to significant precision errors when adding up small numbers. The **log-sum-exp** trick involves factoring out the largest term in the sum and representing the remaining terms relative to it.
+
+For a set of probabilities $\{p_i\}_{1 \leq i \leq n}$, we can use both of the methods:
+
+$$
+\begin{align}
+p_i &\rightarrow \log(p_i) \quad \text{(log trick)} \\
+&\rightarrow \log(p_i) - \max_i(\log(p_i) \quad \text{(max trick)} \\
+&\rightarrow \frac{e^{\log(p_i) - \max_i(\log(p_i)}}{\sum_{i=1}^n e^{\log(p_i) - \max_i(\log(p_i)}} \quad \text{(exp and sum trick)}
+\end{align}
+$$
