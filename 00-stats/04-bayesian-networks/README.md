@@ -477,37 +477,38 @@ The MLE for the likelihood depends on the type of distribution we choose to use 
 
 - In the case of discrete features, we use categorical distribution and the MLE becomes:
 
-  $$
-  \hat{\theta}_{jc}(v) = p(X_j=v|Y=c) = \frac{N _{jc}(v)}{N_c}
-  $$
+$$
+\hat{\theta}_{jc}(v) = p(X_j=v|Y=c) = \frac{N _{jc}(v)}{N_c}
+$$
 
   where
 
-  $$
-  N_{jc}(v)=\sum_{i=1}^N \mathbf{1}(y_i=c)\mathbf{1}(x_{ij}=v)
-  $$
+$$
+N_{jc}(v)=\sum_{i=1}^N \mathbf{1}(y_i=c)\mathbf{1}(x_{ij}=v)
+$$
 
 - In the case of binary features, the categorical distribution becomes the Bernoulli and the MLE becomes:
 
-  $$
-  \hat{\theta}_{jc} = p(X_j=1|Y=c) = \frac{N _{jc}}{N_c}
-  $$
+$$
+\hat{\theta}_{jc} = p(X_j=1|Y=c) = \frac{N _{jc}}{N_c}
+$$
 
   which is the empirical fraction of times that feature j is on in examples of class c, where
 
-  $$
-  N_{jc}=\sum_{i=1}^N \mathbf{1}(y_i=c)\mathbf{1}(x_{ij}=1)
-  $$
+$$
+N_{jc}=\sum_{i=1}^N \mathbf{1}(y_i=c)\mathbf{1}(x_{ij}=1)
+$$
 
 - In the case of real-valued features, we can use a Gaussian distribution and the MLE is:
 
-  $$
-  \hat{\theta}_{jc} = \frac{1}{N_c}\sum_{i:y_i=c} x_{ij}
-  $$
+$$
+\hat{\theta}_ {jc} = \frac{1}{N_c} \sum_{i:y_i=c} x_{ij}
+$$
 
-  $$
-  \hat{\sigma}^2_{jc} = \frac{1}{N_c} \sum_{i:y_i=c} (x_{ij}-\hat{\theta}_{jc})^2
-  $$
+
+$$
+\hat{\sigma}^2_{jc} = \frac{1}{N_c} \sum_{i:y_i=c} (x_{ij}-\hat{\theta}_{jc})^2
+$$
 
 
 It is extremely simple to implement this model fitting procedure. The Naive Bayes algorithm takes $O(nm)$ time. The method is easily generalized to handle features of mixed type. This simplicity is one reason the method is so widely used.
@@ -531,7 +532,7 @@ $$
 This log transformation converts the product of probabilities into a sum of logs, which is much less prone to numerical instability. The log-likelihood is often maximized in practice, as we are typically interested in finding the parameter values $\hat{\theta}_{\text{mle}}$ that maximize this quantity:
 
 $$
-\hat{\theta}_{\text{mle}} = \arg \max_{\theta} \log \mathcal{L}(\mathcal{D};\theta)
+\hat{\theta}_ {\text{mle}} = \arg \max_{\theta} \log \mathcal{L}(\mathcal{D};\theta)
 $$
 
 This approach effectively addresses the issue of underflow by ensuring that the likelihood computation stays within a stable numerical range.
@@ -539,7 +540,7 @@ This approach effectively addresses the issue of underflow by ensuring that the 
 While transforming the likelihood into a log-likelihood helps prevent underflow, there are still other potential numerical issues, such as overflow, which can occur when working with large numbers. In situations where the arguments of an exponential function are extremely large (either very positive or very negative), we may encounter overflow or underflow errors. For instance, consider the softmax function, which is commonly used in classification tasks to compute probabilities from logits:
 
 $$
-\hat{p}_i = \frac{\exp(z_i)}{\sum_{j=1}^{n} \exp(z_j)}
+\hat{p}_ i = \frac{\exp(z_i)}{\sum_{j=1}^{n} \exp(z_j)}
 $$
 
 Here, the numerator and denominator involve exponentiating the values of $z_i$. If the values of $z_i$ are too large or too small, the exponential function can produce values that exceed the limits of the floating-point representation, leading to overflow or underflow. For example, if $z_i$ is very large, the exponential term can become larger than the largest number representable in the system, causing overflow. Conversely, if $z_i$ is very negative, the result of the exponential term can become so small that it results in underflow.
@@ -547,7 +548,7 @@ Here, the numerator and denominator involve exponentiating the values of $z_i$. 
 To deal with this, we can apply a technique known as the **max trick**, which involves subtracting the maximum value from all the entries before computing the exponentials:
 
 $$
-\hat{p}_i = \frac{\exp(z_i - \max_j z_j)}{\sum_{j=1}^{n} \exp(z_j - \max_k z_k)}
+\hat{p}_ i = \frac{\exp(z_i - \max_j z_j)}{\sum_{j=1}^{n} \exp(z_j - \max_k z_k)}
 $$
 
 This trick ensures that the largest exponent is zero, thus preventing overflow, while the differences between all the terms remain the same. This transformation keeps the values within a numerically stable range. Additionally, this ensures that the exponentials remain well-behaved and the probabilities do not exceed 1 or become numerically unstable.
