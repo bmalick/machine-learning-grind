@@ -19,6 +19,7 @@
 - [Bayesian Networks](00-stats/04-bayesian-networks)
 - [Gaussian Processes](00-stats/06-gaussian-process)
 - [Bayesian Inference](00-stats/07-bayesian-inference)
+- [Gaussian Discriminant Analysis](00-stats/05-gda)
 
 
 [Neural Networks](#neural-networks)
