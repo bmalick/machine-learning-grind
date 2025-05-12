@@ -38,6 +38,9 @@
 - [Introduction: tokenization, bag of words/ngrams, tfidf](11-nlp/01-introduction)
 - [Language modeling](11-nlp/02-language-modeling)
 
+[Generative Adversarial Networks](#generative-adversarial-networks)
+- [GANs: Introduction](07-gans/00-intro)
+
 [Time Series](#time-series)
 
 [Reinforcement learning](#reinforcement-learning)
