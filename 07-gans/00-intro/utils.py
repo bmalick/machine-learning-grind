@@ -46,7 +46,7 @@ def update_generator(Z, discriminator, generator, loss, trainer_generator):
     return  loss_generator
 
 
-def train_gan(discriminator, generator, dataloader, data, num_epochs, lr_generator, lr_discriminator, latent_dim, visualize=False):
+def train_gan(discriminator, generator, dataloader, data, num_epochs, lr_generator, lr_discriminator, latent_dim, visualize=False, print_every=25):
     loss = nn.BCEWithLogitsLoss(reduction="sum")
     for w in discriminator.parameters(): nn.init.normal_(w, 0., 0.02)
     for w in generator.parameters(): nn.init.normal_(w, 0., 0.02)
@@ -65,7 +65,8 @@ def train_gan(discriminator, generator, dataloader, data, num_epochs, lr_generat
             Z = torch.normal(0, 1, size=(batch_size, latent_dim))
             loss_discriminator += update_discriminator(X, Z, discriminator, generator, loss, trainer_discriminator).item()
             loss_generator += update_generator(Z, discriminator, generator, loss, trainer_generator).item()
-            print(f"[Epoch {epoch+1}/{num_epochs}] [Step {step_num}/{len(dataloader)}] loss_D: {loss_discriminator/num_instances:.5f}, loss_G: {loss_generator/num_instances:.5f}")
+            if step_num % print_every == 0:
+                print(f"[Epoch {epoch+1}/{num_epochs}] [Step {step_num}/{len(dataloader)}] loss_D: {loss_discriminator/num_instances:.5f}, loss_G: {loss_generator/num_instances:.5f}")
 
         loss_generator /= num_instances
         loss_discriminator /= num_instances
