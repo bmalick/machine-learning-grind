@@ -31,8 +31,9 @@
 - [Dropout](03-optimization-and-regularization/11-dropout)
 
 [Computer Vision](#computer-vision)
-- [1D Convolutional Neural Network VS Fully Connected Network](04-cnn/01-mnist-conv1d)
-- [LeNet](04-cnn/03-le-net)
+- [1D Convolutional Neural Network VS Fully Connected Network](04-cnn/01-mnist-conv1d/main.ipynb)
+- [LeNet](04-cnn/03-le-net/main.ipynb)
+- [AlexNet](04-cnn/04-alex-net/main.ipynb)
 
 [Natural Language Processing](#natural-language-processing)
 - [Introduction: tokenization, bag of words/ngrams, tfidf](11-nlp/01-introduction)
