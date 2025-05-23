@@ -27,7 +27,7 @@ def predict(model, img, device):
     alex_net = model.to(device)
     batch = torch.stack(patches).to(device)
     output = alex_net(batch)
-    output = output.mean(dim=0)
-    pred = output.argmax().item()
-    probas = torch.nn.functional.softmax(output, dim=0).detach().cpu().numpy()
-    return pred, probas
+    probas = torch.nn.functional.softmax(output, dim=1)
+    probas = probas.mean(dim=0)
+    pred = probas.argmax(dim=-1).item()
+    return pred, probas.detach().cpu().numpy()
