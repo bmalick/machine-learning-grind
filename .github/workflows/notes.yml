@@ -1,11 +1,9 @@
-name: Compile LaTeX Notes to PDF
-
 on:
   push:
     paths:
       - 'notes/src/notes/**/*.tex'
       - 'notes/src/notes/**'
-  workflow_dispatch: # allows manual triggering
+  workflow_dispatch:
 
 jobs:
   build-pdfs:
@@ -20,13 +18,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra biber latexmk
 
-    - name: Compile all .tex files in src/notes
+    - name: Compile all .tex files in notes/src/notes
       run: |
         mkdir -p pdfs
         for texfile in notes/src/notes/*.tex; do
           filename=$(basename "$texfile" .tex)
           echo "Compiling $filename.tex"
-          # Run latexmk on each .tex file, output PDF in pdfs/ folder
           latexmk -pdf -interaction=nonstopmode -outdir=pdfs "$texfile"
         done
 
