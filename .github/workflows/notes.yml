@@ -19,6 +19,7 @@ jobs:
     - name: Compile all .tex files in notes/src/notes
       run: |
         mkdir -p pdfs
+        cd notes
         for texfile in notes/src/notes/*.tex; do
           filename=$(basename "$texfile" .tex)
           echo "Compiling $filename.tex"
