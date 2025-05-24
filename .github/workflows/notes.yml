@@ -35,6 +35,28 @@ jobs:
         name: compiled-pdfs
         path: notes/pdfs/*.pdf
 
+    - name: Create HTML index for PDFs
+      run: |
+        cd notes/pdfs
+        echo "<!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset='UTF-8'>
+          <title>My PDF Notes</title>
+        </head>
+        <body>
+          <h1>PDF Notes</h1>
+          <ul>" > index.html
+
+                for pdf in *.pdf; do
+                  echo "<li><a href=\"$pdf\">$pdf</a></li>" >> index.html
+                done
+
+                echo "</ul>
+        </body>
+        </html>" >> index.html
+
+
     - name: Deploy PDFs to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
