@@ -20,7 +20,7 @@ jobs:
       run: |
         mkdir -p pdfs
         cd notes
-        for texfile in notes/src/notes/*.tex; do
+        for texfile in src/notes/*.tex; do
           filename=$(basename "$texfile" .tex)
           echo "Compiling $filename.tex"
           latexmk -pdf -interaction=nonstopmode -outdir=pdfs "$texfile"
