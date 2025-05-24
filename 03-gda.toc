@@ -1,0 +1,13 @@
+\babel@toc {french}{}\relax 
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {section}{\numberline {2}Multivariate normal}{3}{section.2}%
+\contentsline {section}{\numberline {3}MLE for discriminant analysis}{4}{section.3}%
+\contentsline {section}{\numberline {4}Quadratic discriminant analysis (QDA)}{4}{section.4}%
+\contentsline {section}{\numberline {5}Linear discriminant analysis (LDA)}{4}{section.5}%
+\contentsline {section}{\numberline {6}Mahanalobis distance and transformation: another way to interpret LDA}{5}{section.6}%
+\contentsline {section}{\numberline {7}LDA as a dimensionality reduction method}{5}{section.7}%
+\contentsline {section}{\numberline {8}Strategies for preventing overﬁtting}{5}{section.8}%
+\contentsline {section}{\numberline {9}Regularized LDA}{6}{section.9}%
+\contentsline {section}{\numberline {10}Diagonal LDA}{6}{section.10}%
+\contentsline {section}{\numberline {11}Shrinkage and high dimensional statistics}{6}{section.11}%
+\contentsline {section}{\numberline {12}References}{7}{section.12}%

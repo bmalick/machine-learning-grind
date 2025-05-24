@@ -1,0 +1,18 @@
+\babel@toc {french}{}\relax 
+\contentsline {section}{\numberline {1}Bayesian networks as modeling tool}{3}{section.1}%
+\contentsline {section}{\numberline {2}Conditional independence}{5}{section.2}%
+\contentsline {section}{\numberline {3}Free parameters}{5}{section.3}%
+\contentsline {section}{\numberline {4}Inference}{7}{section.4}%
+\contentsline {section}{\numberline {5}Conditional independence in Bayesian network and its rules}{8}{section.5}%
+\contentsline {section}{\numberline {6}Bayesian networks and causality}{10}{section.6}%
+\contentsline {section}{\numberline {7}Learning from complete data: MLE of Bayesian network}{10}{section.7}%
+\contentsline {section}{\numberline {8}Bayesian inference in Bayesian networks}{11}{section.8}%
+\contentsline {section}{\numberline {9}Naive Bayes}{12}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Model fitting}{13}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Bayesian Naive Bayes}{16}{subsection.9.2}%
+\contentsline {section}{\numberline {10}Calibration of output distributions}{17}{section.10}%
+\contentsline {section}{\numberline {11}Classification-related notions}{17}{section.11}%
+\contentsline {subsection}{\numberline {11.1}False positive vs false negative tradeoff}{17}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Precision recall curves}{19}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}F-score}{19}{subsection.11.3}%
+\contentsline {section}{\numberline {12}References}{20}{section.12}%
