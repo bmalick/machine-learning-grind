@@ -5,6 +5,10 @@
 > helloo ...
 > i'm studying Machine Learning and Deep Learning based on books `Understanding Deep Learning`, `Dive into Deep Learning`,  `Hands-on Machine Learning with Scikit-Learn Keras & TensorFlow` & `Machine Learning: A Probabilistic Perspective`
 
+# Notes
+
+Here are some of my [PDFs notes](https://bmalick.github.io/machine-learning-grind/) i took from reading the books below.
+
 # Content
 
 

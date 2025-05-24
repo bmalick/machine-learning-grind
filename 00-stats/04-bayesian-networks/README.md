@@ -2,6 +2,10 @@
 
 ## Bayesian networks as modeling tool
 
+> [!Note]
+> Here my [PDF note](https://bmalick.github.io/machine-learning-grind/02-bayesian-networks.pdf)
+
+
 **Definition (Graph)**  
 A graph $G$ consists of vertices (nodes) and edges (links) between the vertices. Edges may be directed or undirected. A graph with all edges directed is called a **directed graph**, whereas a graph with all edges undirected is called an **undirected graph**.
 

@@ -1,5 +1,8 @@
 # Bayesian inference
 
+> [!Note]
+> Here my [PDF note](https://bmalick.github.io/machine-learning-grind/01-estimation-and-bayesian-inference.pdf)
+
 ### Heart of Bayesian inference
 
 As we treat parameters $\theta$ as unknown and data $\mathcal{D}$ fixed and known, we represent our uncertainty about parameters, after (posterior to) seeing data, by computing the **posterior distribution** using Bayes' rule:
