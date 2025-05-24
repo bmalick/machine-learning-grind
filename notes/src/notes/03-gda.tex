@@ -1,0 +1,271 @@
+\documentclass[12pt, a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{tikz}
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage[authoryear]{natbib}
+\usepackage{url}
+\usepackage{geometry}
+\usepackage{keyval}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[table]{xcolor}
+\usepackage{makecell}
+\usepackage[none]{hyphenat}
+\usepackage{amsfonts}
+\usepackage{algpseudocode}
+\usetikzlibrary{positioning}
+\usepackage{cancel}
+\usepackage{blkarray}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage[absolute,overlay]{textpos}
+
+% Page Layout
+\geometry{margin=1in}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+
+\renewcommand*{\sectionmark}[1]{\markright{\thesection.~~#1}}
+\renewcommand*{\subsectionmark}[1]{\markright{\thesubsection.~~#1}}
+\renewcommand*{\subsubsectionmark}[1]{\markright{\thesubsubsection.~~#1}}
+\lhead{\sffamily \rightmark}
+\renewcommand{\headrulewidth}{0pt}
+
+% use dots instead of -
+\AtBeginDocument{
+  \def\labelitemi{$\bullet$}
+}
+\sloppy
+
+% keys & commands
+\input{src/keys.tex}
+\input{src/commands.tex}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+% Define unnumbered environments
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem*{remark}{Remark} % No numbering
+\setlength{\parindent}{0pt} % remove indent
+\numberwithin{figure}{section}
+\numberwithin{equation}{section}
+\numberwithin{table}{section}
+
+\author{Baye Malick Gning}
+\date{}
+
+% TITLE
+\title{Gaussian discrimant analysis}
+
+
+\begin{document}
+
+\maketitle
+\vspace{2cm}
+
+
+\newpage
+\tableofcontents
+\newpage
+
+
+% BEGIN
+\section{Introduction}
+Gaussian discriminant analysis (GDA) is a generative classifier. Compared to Naive Bayes, GDA is restricted to continuous features and assumes features are normally distributed within classes, i.e.,
+
+\begin{equation}
+p(X|y=c,\theta)=\mathcal{N}(X|\mu_c, \Sigma_c)
+\label{eq:qda-features}
+\end{equation}
+
+If $\Sigma_c$ is diagonal, this is equivalent to Naive Bayes. With $k-1+k\left(m+\frac{m(m+1)}{2}\right)$ parameters, GDA has more parameters than Naive Bayes ($k-1+2km$ parameters). Thus, it is more accurate but is the risk of overfitting is higher. In comparison with Naive Bayes, 
+
+\makeimage{
+    path=images/qda.png,
+    caption=Quadratic discriminant analysis with $k-1+k\left(m+\frac{m(m+1)}{2}\right)$ parameters,
+    ref=qda,
+    width=0.4
+}{H}
+
+As,
+% \begin{equation}
+% p(y = c | x, \theta) = \frac{p(y = c | \theta) p(x | y = c, \theta)}{\sum\limits_{c} p(y = c | \theta) p(x | y = c, \theta)}
+% \end{equation}
+\begin{equation}
+p(Y = c | X, \theta) = \frac{p(Y = c | \theta) p(X | Y = c, \theta)}{p(X |\theta)}
+\label{eq:qda-bayes-formula}
+\end{equation}
+
+we can classify a feature vector using the following decision rule:
+\begin{equation}
+\hat{y}(x) = \arg\max_c \left[ \log p(y = c | \pi) + \log p(x | \theta_c) \right]
+\end{equation}
+
+\section{Multivariate normal}
+The pdf for an MVN in D dimensions is deﬁned by the following:
+
+\begin{equation}
+\mathcal{N}(x | \mu, \Sigma) = \frac{1}{(2\pi)^{D/2} |\Sigma|^{1/2}} \exp \left( -\frac{1}{2} (x - \mu)^T \Sigma^{-1} (x - \mu) \right)
+\end{equation}
+
+The expression inside the exponent is the Mahalanobis distance between a data vector $x$ and the mean vector $\mu$. The first two moments are:
+\begin{equation}
+\mathbbm{E}(X)=\mu \quad \text{and} \quad
+\text{cov}(X)=\mathbbm{E}((X-\mu)(X-\mu)^T)
+\end{equation}
+% We can gain a better understanding of this quantity by performing an eigendecomposition of Σ.
+
+If we have $N$ i.i.d. samples $x_i \sim \mathcal(\mu, \Sigma)$, then the MLE for the parameters is given by:
+
+\begin{equation}
+\hat{\mu}_{mle} = \frac{1}{N}\sum_{i=1}^N x_i=\bar{x}
+\end{equation}
+
+\begin{equation}
+\hat{\Sigma}_{mle} = \frac{1}{N}\sum_{i=1}^N (x_i-x)(x_i-x)^T = \frac{1}{N}\sum_{i=1}^N x_i x_i^T - \bar{x}\bar{x}^T
+\end{equation}
+
+\section{MLE for discriminant analysis}
+The log-likelihood function is as follows:  
+
+\begin{align}
+\log p(\mathcal{D} | \theta)
+&= \left[\sum_{i}^{N}\sum_{c=1}^{C} \mathbbm{1}(y_i = c) \log \pi_c\right] + \sum_{c=1}^{C}\left[\sum_{i:y_i = c} \log \mathcal{N}(X|\mu_c, \Sigma_c)\right]
+\end{align}
+
+We see that this factorizes into a term for $\pi$, and $C$ terms for each $\mu_c$ and $\Sigma_c$. Hence we can estimate these parameters separately. For the class prior, we have: $\hat{\pi}_c = \frac{N_c}{N}$ as with Naive Bayes with $N_c = \sum_{i} \mathbbm{1}(y_i = c)$ is the number of examples in class $c$. For the class-conditional densities, we just partition the data based on its class label, and compute the MLE for each Gaussian:
+
+\begin{equation}
+\hat{\mu}_c = \frac{1}{N_c} \sum_{i: y_i = c} x_i = \frac{1}{N_c} \sum_{i=1}^N \mathbbm{1}(y_i = c) x_i
+\end{equation}
+
+\begin{equation}
+\hat{\Sigma}_c = \frac{1}{N_c} \sum_{i: y_i = c} (x_i - \hat{\mu}_c)(x_i - \hat{\mu}_c)^T = \frac{1}{N_c} \sum_{i=1}^N \mathbbm{1}(y_i = c) (x_i - \hat{\mu}_c)(x_i - \hat{\mu}_c)^T
+\end{equation}
+
+\section{Quadratic discriminant analysis (QDA)}
+From equation \ref{eq:qda-bayes-formula}, we derive:
+\begin{equation}
+p(Y = c | X, \theta) \propto \pi_c \frac{1}{|\Sigma_c|^{1/2}} \exp \left[ -\frac{1}{2} (x - \mu_c)^T \Sigma_c^{-1} (x - \mu_c) \right]
+\label{eq:qda-bayes-formula}
+\end{equation}
+This formula requires $\Sigma_c$ to be well conditioned.
+
+This leads to class boundaries between classes $c_1$ and $c_2$ being quadratic surfaces:
+\begin{equation}
+\log(\pi{_{c_1}} |\Sigma{_{c_1}}|^{1/2}) - \frac{1}{2} (x - \mu{_{c_1}})^T \Sigma{_{c_1}}^{-1} (x - \mu{_{c_1}})=
+\log(\pi{_{c_2}} |\Sigma{_{c_2}}|^{1/2}) - \frac{1}{2} (x - \mu{_{c_2}})^T \Sigma{_{c_2}}^{-1} (x - \mu{_{c_2}})
+\label{eq:qda-class-boundaries}
+\end{equation}
+
+The result is known as \textbf{quadratic discrimant analysis (QDA)}
+
+
+\section{Linear discriminant analysis (LDA)}
+We now consider a special case in which the covariance matrices are \textbf{tied} or \textbf{shared} across classes (\textbf{homoscedasticity}), $\Sigma_c=\Sigma$. In this case, we can simplify equation \ref{eq:qda-features} as follows:
+\begin{equation}
+p(X|y=c,\theta)=\mathcal{N}(X|\mu_c, \Sigma)
+\end{equation}
+
+
+LDA has $k-1+km+1\frac{m(m+1)}{2}$ parameters, is less accurate than QDA but has lower risk of overfitting. The MLE for $\Sigma$ is:
+\begin{equation}
+\hat{\Sigma} = \frac{1}{N} \sum_{c=1}^C \sum_{i:y_i=c} (x_i - \hat{\mu}_c)(x_i - \hat{\mu}_c)^T
+\end{equation}
+
+
+\section{Mahanalobis distance and transformation: another way to interpret LDA}
+We performe an eigendecomposition of $\Sigma$. We write  $\Sigma = U \Lambda U^T$ where $U$ is an orthonormal matrix of eigenvectors satisfying $U^T U = I$, and $\Lambda$ is a diagonal matrix of eigenvalues $\text{Diag}(\sigma_i^2)$. Let $\phi$ be the \textbf{Mahalanobis transformation} (rotation $U^T$ + scaling on new axes):  
+\begin{equation}
+\phi: x \mapsto z = \Sigma^{-\frac{1}{2}} x = \text{Diag}(\sigma_i^{-1}) U^T x
+\label{ex:qda-mahanalobis-func}
+\end{equation}
+
+The Mahanalobis distance between $x_1$ and $x_2$ can be written in two forms:
+\begin{align}
+d_M(x_1,x_2)
+&=\sqrt{(x_1-x_2)^T \Sigma^{-1} (x_1-x_2)}\\
+&=\sqrt{(\phi(x_1)-\phi(x_2))^T (\phi(x_1)-\phi(x_2))}
+\label{eq:qda-mahanalobis-distance}
+\end{align}
+
+Then $\phi$ decorrelates samples:  
+\begin{equation}
+\mathbf{x} \sim \mathcal{N}(\mathbf{0}, \Sigma) \quad \Rightarrow \quad \phi(x) \sim \mathcal{N}(0, I)
+\end{equation}
+% TODO: make program for figure in slide 9
+LDA chooses the closest $\mu_c$ in the Mahanalobis space as:
+
+\begin{equation}
+p(Y=c|X) \propto \pi_c |\Sigma^{-1}| exp \left[-\frac{1}{2}d_M(X,\mu_c)\right]
+\end{equation}
+
+
+We show below that LDA class boundaries are hyperplanes. Indeed, using $z$, Mahanalobis transformation and inspiring from equation \ref{eq:qda-class-boundaries}, we have:
+
+\begin{align}
+&z \in \text{boundary between class 1 and 2}\\
+&\Leftrightarrow \frac{1}{2} \|z - z_1\|^2 - \log \pi_1 = \frac{1}{2} \|z - z_2\|^2 - \log \pi_2\\
+&\Leftrightarrow \left(z - \frac{z_1 + z_2}{2}\right) (z_2 - z_1) = \log \frac{\pi_1}{\pi_2}
+\end{align}
+
+% TODO: code and figures for slide 11, 12, 13
+
+
+\section{LDA as a dimensionality reduction method}
+TODO: slide 10
+
+% TODO: add figure from slides
+\section{Strategies for preventing overﬁtting}
+The speed and simplicity of the MLE method is one of its greatest appeals. However, the MLE can badly overﬁt in high dimensions. In particular, the MLE for a full covariance matrix is singular if $N_c < m$. And even when $N_c > m$, the MLE can be ill-conditioned, meaning it is close to singular. There are several possible solutions to this problem:
+\begin{itemize}
+\item Use a diagonal covariance matrix for each class, which assumes the features are conditionally independent; this is equivalent to using a naive Bayes classifier
+\item Use a full covariance matrix, but force it to be the same for all classes, $\Sigma_c=\Sigma$. This is an example of parameter tying or parameter sharing, and is equivalent to LDA
+\item Use a diagonal covariance matrix and forced it to be shared. This is called diagonal covariance LDA
+\item Use a full covariance matrix, but impose a prior and then integrate it out. If we use a conjugate prior, this can be done in closed form; this is analogous to the Bayesian Naive Bayes
+\item Fit a full or diagonal covariance matrix by MAP estimation.
+\item Project the data into a low dimensional subspace and ﬁt the Gaussians there.
+\end{itemize}
+
+\section{Regularized LDA}
+TODO
+
+\section{Diagonal LDA}
+Covariance matrices are tied, so $\Sigma_c=\Sigma$ as in LDA, and then to use a diagonal covariance matrix for each class. The hypothesis can be view as homoscedasticity (LDA) and conditional independence (Naive Bayes). Diagonal LDA has $k-1+km+m$ parameters. Thus, we have even less parameters than Naive Bayes. Diagonal LDA is very simplistic but very robust.
+
+% TODO: code and figure from slide 15 and 16
+
+\section{Shrinkage and high dimensional statistics}
+TODO
+
+% TODO: figure of last slide 20
+
+
+
+%%%%%%%%%% Appendix
+% \newpage
+% \input{./src/appendix.tex}
+
+\newpage
+\section{References}
+\begin{itemize}
+    \item Murphy, K. P. (2012). \textit{Machine Learning: a Probabilistic Perspective}. MIT Press. \url{https://probml.github.io/pml-book/book0.html}
+    \item Murphy, K. P. (2023). \textit{Probabilistic Machine Learning: Advanced Topics}. MIT Press. \url{http://probml.github.io/book2}
+    \item Statistical Models - SDI Metz
+\end{itemize}
+
+\end{document}

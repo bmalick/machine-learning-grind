@@ -1,0 +1,128 @@
+\documentclass[12pt, a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{tikz}
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage[authoryear]{natbib}
+\usepackage{url}
+\usepackage{geometry}
+\usepackage{keyval}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[table]{xcolor}
+\usepackage{makecell}
+\usepackage[none]{hyphenat}
+\usepackage{amsfonts}
+\usepackage{algpseudocode}
+\usetikzlibrary{positioning}
+\usepackage{cancel}
+\usepackage{blkarray}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage[absolute,overlay]{textpos}
+
+% Page Layout
+\geometry{margin=1in}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+
+\renewcommand*{\sectionmark}[1]{\markright{\thesection.~~#1}}
+\renewcommand*{\subsectionmark}[1]{\markright{\thesubsection.~~#1}}
+\renewcommand*{\subsubsectionmark}[1]{\markright{\thesubsubsection.~~#1}}
+\lhead{\sffamily \rightmark}
+\renewcommand{\headrulewidth}{0pt}
+
+% use dots instead of -
+\AtBeginDocument{
+  \def\labelitemi{$\bullet$}
+}
+\sloppy
+
+% keys & commands
+\input{src/keys.tex}
+\input{src/commands.tex}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+% Define unnumbered environments
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem*{remark}{Remark} % No numbering
+\setlength{\parindent}{0pt} % remove indent
+\numberwithin{figure}{section}
+\numberwithin{equation}{section}
+\numberwithin{table}{section}
+
+\author{Baye Malick Gning}
+\date{}
+
+% TITLE
+\title{Introduction to statistical models}
+
+
+\begin{document}
+
+\maketitle
+\vspace{2cm}
+
+
+\newpage
+\tableofcontents
+\newpage
+
+
+% BEGIN
+% \section{Introduction}
+
+\begin{definition}[Model]
+A model is an explicit relation between variables of interest that aims to approximate some observable phenomena. Models are fundamental tools in understanding and predicting behavior in various domains, and they come with diverse properties that define their scope and utility.
+    
+
+A model can be categorized based on the following properties:
+\begin{itemize}
+    \item Deterministic or statistical/stochastic: deterministic models have fixed outputs for given inputs, while statistical or stochastic models incorporate randomness and uncertainty, allowing them to account for variability in the system.
+    \item Static or dynamic: static models (e.g., statistical models) do not incorporate time, while dynamic models, such as ordinary differential equations and Markov chains, account for changes over time.
+    \item Elementary or composite: elementary models are straightforward, while composite models combine multiple components, often visualized using block diagrams. This leads to the use of divide-and-conquer strategies to address complex problems.
+    \item Causal or non-causal: causal models rely on past information to compute future outcomes, providing a more realistic representation of systems. \\
+\end{itemize}
+\end{definition}
+
+\boldtitle{Explicit models vs. black-box machine learning methods}
+
+Models can serve various purposes, such as predicting an output variable based on input parameters. While black-box machine learning methods optimize parameters to fit data, they often lack interpretability. In contrast, explicit models provide understandable explanations for underlying phenomena. This explainability is particularly important in contexts requiring trust and insights.
+
+Causal models are especially advantageous as they generalize better to out-of-distribution (OOD) domains. A relevant model is more data-efficient, requiring less information to make accurate predictions compared to black-box methods.
+\\
+
+\boldtitle{Ways to view a model}
+
+Models can be interpreted in different ways depending on the context. Set of functions represents a set of relationships between interacting variables. Computational or causal graph emphasizes the flow of information and causality between variables. Exogenous variables are inputs and endogenous variables are internal to the model. Simulation algorithm simulates the behavior of a system under specified conditions. \\
+
+\boldtitle{Weaknesses of deterministic models}
+
+Deterministic models often fail to account for the various sources of errors and uncertainty inherent in real-world systems. Key challenges include:
+\begin{itemize}
+    \item unobserved latent variables: deterministic models ignore internal noise and the presence of unmeasured variables. Stochastic models helps address this issue by incorporating know latent variables.
+    \item bias and imprecision: inadequate or overly simplified parameterizations can lead to biased models. Stochastic models with internal noise address this issue.
+    \item errorneous or noisy inputs: modeling inputs as random variables is a solution.
+    \item out-of-distribution (ood) inputs: in case of limited inputs, model sshould be able to detect outliers (ood)
+    \item uncertainty in parameters: limited data availability can lead to uncertainty in model parameters. We should adapt model complexity to the quatity of available data. \\
+\end{itemize}
+
+\boldtitle{Statistical / probabilistic / stochastic models}
+
+A statistical model embodies a set of statistical assumptions concerning the generation of sample data. Variables are random vairables, functions are stochastic (i.e. output is a distribution). When parameters are also random vairables, we are in the case of Bayesian inference.
+
+\end{document}
