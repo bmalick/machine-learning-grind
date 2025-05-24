@@ -3,6 +3,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: write
+
 jobs:
   build-pdfs:
     runs-on: ubuntu-latest
