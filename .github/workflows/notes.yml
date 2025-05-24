@@ -32,3 +32,10 @@ jobs:
         name: compiled-pdfs
         path: notes/pdfs/*.pdf
 
+    - name: Deploy PDFs to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./notes/pdfs
+        publish_branch: gh-pages
+        force_orphan: true
