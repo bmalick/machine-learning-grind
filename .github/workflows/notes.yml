@@ -3,8 +3,8 @@ name: Compile LaTeX Notes to PDF
 on:
   push:
     paths:
-      - 'src/notes/**/*.tex'
-      - 'src/notes/**'
+      - 'notes/src/notes/**/*.tex'
+      - 'notes/src/notes/**'
   workflow_dispatch: # allows manual triggering
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
     - name: Compile all .tex files in src/notes
       run: |
         mkdir -p pdfs
-        for texfile in src/notes/*.tex; do
+        for texfile in notes/src/notes/*.tex; do
           filename=$(basename "$texfile" .tex)
           echo "Compiling $filename.tex"
           # Run latexmk on each .tex file, output PDF in pdfs/ folder
