@@ -9,6 +9,7 @@ __pycache__
 *.csv
 *.zip
 *.pth
+*.log
 readme
 SMSSpamCollection
 FashionMNIST/

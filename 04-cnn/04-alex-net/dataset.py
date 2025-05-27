@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 class ImageNet100Dataset(torch.utils.data.Dataset):
-    def __init__(self, root="imagenet-100", train:bool=True, transforms=None, normalize=True):
+    def __init__(self, root="/home/malick/datasets/imagenet-100", train:bool=True, transforms=None, normalize=True):
         with open(os.path.join(root, "Labels.json"), "r") as f:
             labels = json.load(f)
 
@@ -40,7 +40,7 @@ class ImageNet100Dataset(torch.utils.data.Dataset):
     def __repr__(self): return "ImageNet100Dataset"
 
 class ImageNet100:
-    def __init__(self, root="imagenet-100", batch_size=128, num_workers=4, transforms=None, normalize=True):
+    def __init__(self, root="/home/malick/datasets/imagenet-100", batch_size=128, num_workers=4, transforms=None, normalize=True):
         self.train = ImageNet100Dataset(train=True, root=root, transforms=transforms, normalize=normalize)
         self.eval = ImageNet100Dataset(train=False, root=root, transforms=transforms, normalize=normalize)
 

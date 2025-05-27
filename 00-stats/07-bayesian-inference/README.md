@@ -1,7 +1,7 @@
 # Bayesian inference
 
 > [!Note]
-> Here my [PDF note](https://bmalick.github.io/machine-learning-grind/01-estimation-and-bayesian-inference.pdf)
+> Here is my [PDF note](https://bmalick.github.io/machine-learning-grind/01-estimation-and-bayesian-inference.pdf)
 
 ### Heart of Bayesian inference
 

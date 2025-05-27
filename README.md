@@ -38,6 +38,7 @@ Here are some of my [PDFs notes](https://bmalick.github.io/machine-learning-grin
 - [1D Convolutional Neural Network VS Fully Connected Network](04-cnn/01-mnist-conv1d/main.ipynb)
 - [LeNet](04-cnn/03-le-net/main.ipynb)
 - [AlexNet](04-cnn/04-alex-net/main.ipynb)
+- [VGGNet](04-cnn/05-vgg-net/main.ipynb)
 
 [Natural Language Processing](#natural-language-processing)
 - [Introduction: tokenization, bag of words/ngrams, tfidf](11-nlp/01-introduction)

@@ -1,7 +1,7 @@
 # Gaussian Discriminant Analysis
 
 > [!Note]
-> Here my [PDF note](https://bmalick.github.io/machine-learning-grind/03-gda.pdf)
+> Here is my [PDF note](https://bmalick.github.io/machine-learning-grind/03-gda.pdf)
 
 Gaussian discriminant analysis (GDA) is a generative classifier. Compared to Naive Bayes, GDA is restricted to continuous features and assumes features are normally distributed within classes, i.e.,
 

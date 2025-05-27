@@ -3,7 +3,7 @@
 ## Bayesian networks as modeling tool
 
 > [!Note]
-> Here my [PDF note](https://bmalick.github.io/machine-learning-grind/02-bayesian-networks.pdf)
+> Here is my [PDF note](https://bmalick.github.io/machine-learning-grind/02-bayesian-networks.pdf)
 
 
 **Definition (Graph)**  
