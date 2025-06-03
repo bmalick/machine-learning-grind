@@ -5,6 +5,7 @@ import logging
 # Scheduler
 
 def train(device, model, data, optimizer, scheduler, max_epochs, log_every=10):
+    model_name = model.__class__.__name__.lower()
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     console_handler = logging.StreamHandler()
@@ -113,8 +114,8 @@ def train(device, model, data, optimizer, scheduler, max_epochs, log_every=10):
 
         if eval_acc > best_acc:
             best_acc = eval_acc
-            torch.save(model.state_dict(), "best-alex-net.pth")
+            torch.save(model.state_dict(), f"best-{model_name}.pth")
             
-    torch.save("alexnet.pth")
-    logger.info("Model saved at alexnet.pth")
+    torch.save(model, f"{model_name}.pth")
+    logger.info(f"Model saved at {model_name}.pth")
     return overall_metrics

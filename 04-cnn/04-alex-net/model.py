@@ -37,6 +37,7 @@ class AlexNet(nn.Module):
         return self.net(x)
 
 
+
 if __name__ == "__main__":
     x = torch.randn((1, 3, 224, 224))
     model = AlexNet()
