@@ -28,12 +28,16 @@ class VGGBlock(nn.Sequential):
 
 class VGGNet(nn.Sequential):
     _architecture = {
-        "vgg16": [(2, 64), (2, 128), (3, 256), (3, 512), (3, 512)],
-        "vgg19": [(2, 64), (2, 128), (4, 256), (4, 512), (4, 512)],
+        "vgg11": [(1, 64), (1, 128), (2, 256), (2, 512), (2, 512)], # paper configuration
+        "vgg13": [(2, 64), (2, 128), (2, 256), (2, 512), (2, 512)], # paper configuration
+        "vgg16": [(2, 64), (2, 128), (3, 256), (3, 512), (3, 512)], # paper configuration
+        "vgg19": [(2, 64), (2, 128), (4, 256), (4, 512), (4, 512)], # paper configuration
+        # "vgg16-half": [(2, 32), (2, 64), (3, 128), (3, 256), (3, 256)],
+        # "vgg19-half": [(2, 32), (2, 64), (4, 128), (4, 256), (4, 256)],
     }
 
     def __init__(self, image_channels:int=3, arch:str="vgg16", num_classes:int=100):
-        assert arch in ["vgg16", "vgg19"], "arch must be vgg16 or vgg19"
+        assert arch in self._architecture.keys(), "arch must be %s" % " or".join(list(self._architecture.keys()))
         super(VGGNet, self).__init__()
 
         self.arch_name = arch

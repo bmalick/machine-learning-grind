@@ -22,7 +22,7 @@ def train(device, model, data, optimizer, scheduler, max_epochs, log_every=10):
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
 
-    logger.info("Start training")
+    logger.info(f"Start training of {model_name}")
     logger.info(f"Train dataset: {data.train} - {len(data.train)} instances")
     logger.info(f"Eval dataset: {data.eval} - {len(data.eval)} instances")
     logger.info(f"Model: {model}")

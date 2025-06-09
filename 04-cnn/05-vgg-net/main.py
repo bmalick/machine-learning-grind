@@ -1,17 +1,18 @@
 #!/home/malick/miniconda3/envs/pt/bin/python3
 
 import torch
+import torchvision
 import matplotlib.pyplot as plt
+from argparse import ArgumentParser
 
 import dataset
 import model
 import train
-import inference
 
 
-def train_vgg(arch:str):
+def train_vgg(arch:str, batch_size: int):
 
-    batch_size = 32
+    batch_size = batch_size
     learning_rate = 0.01
     momentum = 0.9
     weight_decay = 0.0005
@@ -19,7 +20,17 @@ def train_vgg(arch:str):
     log_every = 1000
     # log_every = 1
 
-    data = dataset.ImageNet100(batch_size=batch_size)
+    transforms = torchvision.transforms.Compose([
+        torchvision.transforms.Resize(size=256),
+        torchvision.transforms.CenterCrop(size=256),
+        torchvision.transforms.RandomCrop(size=(224,224)),
+        torchvision.transforms.ToTensor(),
+        dataset.FancyPCA(),
+        torchvision.transforms.RandomHorizontalFlip(p=0.5),
+        torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    data = dataset.ImageNet100(batch_size=batch_size, transforms=transforms)
     num_classes = data.num_classes
 
 
@@ -49,5 +60,10 @@ def train_vgg(arch:str):
             plt.close()
 
 if __name__=="__main__":
-    # train_vgg(arch="vgg16")
-    train_vgg(arch="vgg19")
+    parser = ArgumentParser()
+    parser.add_argument("--model", "-m", type=str, required=True)
+    parser.add_argument("--batch-size", "-b", type=int, required=True)
+    args = parser.parse_args()
+    arch = args.model
+    batch_size = args.batch_size
+    train_vgg(arch=arch, batch_size=batch_size)
