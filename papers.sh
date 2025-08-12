@@ -216,7 +216,6 @@ download(){
     local name=$1
     shift
     local urls=$@
-    echo ${urls[@]}
     local name_save_dir=$SAVE_DIR/$name
     mkdir -p $name_save_dir
 
@@ -227,7 +226,11 @@ download(){
     i=1
     for url in ${urls[0]}; do
         fname="$name_save_dir/$(printf '%02d' $i).pdf"
-        wget -O $fname $url
+        if [ $fname ]; then
+            echo "$fname already exists"
+        else
+            wget -O $fname $url
+        fi
         ((i++))
     done
     echo $i papers saved into $name_save_dir

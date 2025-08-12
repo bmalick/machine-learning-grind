@@ -10,15 +10,19 @@ from sklearn.decomposition import PCA
 import numpy as np
 
 class ImageNet100Dataset(torch.utils.data.Dataset):
-    def __init__(self, root="/home/malick/datasets/imagenet-100", train:bool=True, transforms=None):
+    def __init__(self, root="/home/malick/datasets/imagenet-100", train:bool=True, transforms=None, num_labels: int = None):
         with open(os.path.join(root, "Labels.json"), "r") as f:
             labels = json.load(f)
 
+        if num_labels is not None:
+            labels = dict(sorted(labels.items(), key=lambda v: v[0])[:num_labels])
         self.labels = {k: (v,i) for i, (k,v) in enumerate(labels.items())}
         self.num_classes = len(self.labels)
-        self.labels_idx2str = {v[1]: v[0] for v in self.labels.values()}
+        self.labels_idx2str = {i: v[0] for i,v in enumerate(self.labels.values())}
         set_name = "train" if train else "val"
         self.files = glob.glob(f"{root}/{set_name}*/*/*.JPEG", recursive=True)
+        if num_labels is not None:
+            self.files = [f for f in self.files if os.path.basename(os.path.dirname(f)) in self.labels]
 
         self.transforms = transforms
 
@@ -36,15 +40,15 @@ class ImageNet100Dataset(torch.utils.data.Dataset):
     def __repr__(self): return "ImageNet100Dataset"
 
 class ImageNet100:
-    def __init__(self, root="/home/malick/datasets/imagenet-100", batch_size=128, num_workers=4, transforms=None):
-        self.train = ImageNet100Dataset(train=True, root=root, transforms=transforms)
+    def __init__(self, root="/home/malick/datasets/imagenet-100", batch_size=128, num_workers=4, transforms=None, num_labels:int=None):
+        self.train = ImageNet100Dataset(train=True, root=root, transforms=transforms, num_labels=num_labels)
         eval_transforms = torchvision.transforms.Compose([
             torchvision.transforms.Resize(size=256),
             torchvision.transforms.CenterCrop(size=224),
             torchvision.transforms.ToTensor(),
             torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
-        self.eval = ImageNet100Dataset(train=False, root=root, transforms=eval_transforms)
+        self.eval = ImageNet100Dataset(train=False, root=root, transforms=eval_transforms, num_labels=num_labels)
 
         self.labels = self.train.labels
         self.num_classes = self.train.num_classes
@@ -91,7 +95,7 @@ if __name__=="__main__":
         torchvision.transforms.ToTensor(),
         FancyPCA(),
     ])
-    data = ImageNet100(transforms=transforms, batch_size=32)
+    data = ImageNet100(transforms=transforms, batch_size=32, num_labels=10)
     for batch in data.eval_dataloader:
         x, y = batch
         labels = [data.labels_idx2str[yi] for yi in y.numpy()]

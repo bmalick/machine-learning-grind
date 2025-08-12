@@ -1,8 +1,24 @@
+import json
 import torch
 from torch import nn
 import logging
 
 # Scheduler
+
+class Writer:
+    def __init__(self, fname: str):
+        self.fname = fname
+        self.metrics = {}
+
+
+    def add(self, step, metric_name, value):
+        if not metric_name in self.metrics:
+            self.metrics[metric_name] = {}
+        self.metrics[metric_name][step] = value
+
+    def save(self):
+        with open(self.fname+".json", "w") as f:
+            json.dump(self.metrics, f)
 
 def train(device, model, data, optimizer, scheduler, max_epochs, log_every=10):
     model_name = model.__class__.__name__.lower()
@@ -42,6 +58,13 @@ def train(device, model, data, optimizer, scheduler, max_epochs, log_every=10):
 
     best_acc = 0
 
+    writer = Writer(fname=model_name)
+    setattr(writer, "num_train_batches", len(train_dataloader))
+    setattr(writer, "max_epochs", max_epochs)
+    
+    writer.metrics["num_train_batches"] = len(train_dataloader)
+    writer.metrics["max_epochs"] = max_epochs
+
     def fit_epoch(epoch_num):
         train_loss = 0.
         eval_loss = 0.
@@ -74,6 +97,9 @@ def train(device, model, data, optimizer, scheduler, max_epochs, log_every=10):
             global_step = (epoch_num*len(train_dataloader)) + step_num
             overall_metrics["train_step"].append(global_step)
 
+            writer.add(step=global_step, metric_name="Loss/train", value=avg_loss)
+            writer.add(step=global_step, metric_name="Accuracy/train", value=avg_acc)
+
             if step_num % log_every == 0:
                 logger.info(f"[Epoch {epoch_num+1}/{max_epochs}] [Step {global_step}] train_loss: {avg_loss:.5f}, train_acc: {avg_acc:.5f}")
 
@@ -104,8 +130,13 @@ def train(device, model, data, optimizer, scheduler, max_epochs, log_every=10):
         eval_loss = eval_loss / eval_instances
         eval_acc = eval_acc / eval_instances
 
+        writer.add(step=epoch_num, metric_name="Loss/eval", value=eval_loss)
+        writer.add(step=epoch_num, metric_name="Accuracy/eval", value=eval_acc)
+
         logger.info(f"[Epoch {epoch_num+1}/{max_epochs}] train_loss: {train_loss:.5f}, train_acc: {train_acc:.5f}, eval_loss: {eval_loss:.5f}, eval_acc: {eval_acc:.5f}")
         scheduler.step(eval_loss)
+        torch.save(model, f"{model_name}.pth")
+        logger.info(f"Model saved at {model_name}.pth")
 
         return eval_acc
 
@@ -116,6 +147,5 @@ def train(device, model, data, optimizer, scheduler, max_epochs, log_every=10):
             best_acc = eval_acc
             torch.save(model.state_dict(), f"best-{model_name}.pth")
             
-    torch.save(model, f"{model_name}.pth")
-    logger.info(f"Model saved at {model_name}.pth")
+    writer.save()
     return overall_metrics

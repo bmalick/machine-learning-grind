@@ -9,14 +9,14 @@ import model
 import train
 
 
-def train_model():
+def train_model(num_labels: int = 10):
 
-    batch_size = 64
+    batch_size = 256
     learning_rate = 0.01
     momentum = 0.9
     weight_decay = 0.0005
     max_epochs = 90
-    log_every = 500
+    log_every = 25
 
 
     transforms = torchvision.transforms.Compose([
@@ -29,7 +29,7 @@ def train_model():
         torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
-    data = dataset.ImageNet100(batch_size=batch_size, transforms=transforms)
+    data = dataset.ImageNet100(batch_size=batch_size, transforms=transforms, num_labels=num_labels)
     num_classes = data.num_classes
 
 
@@ -61,5 +61,4 @@ def train_model():
 
 if __name__=="__main__":
     train_model()
-    # train_model(config=ALEXNET_HALF_CONFIG)
 

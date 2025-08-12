@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 import dataset
 
-def pca_imagenet_100(batch_size: int = 128):
+def pca_imagenet_100(num_labels: int = None, batch_size: int = 128):
     start = time.time()
 
 
@@ -15,7 +15,7 @@ def pca_imagenet_100(batch_size: int = 128):
         torchvision.transforms.CenterCrop(size=256),
         torchvision.transforms.ToTensor(),
     ])
-    data = dataset.ImageNet100(transforms=transforms, batch_size=batch_size)
+    data = dataset.ImageNet100(transforms=transforms, batch_size=batch_size, num_labels=num_labels)
 
     ipca = IncrementalPCA(n_components=3)
 
@@ -38,4 +38,5 @@ def pca_imagenet_100(batch_size: int = 128):
     print("PCA eigvals and eigvecs on Imagenet-100 are saved into imagenet-100-pca.json")
 
 if __name__ == "__main__":
-    pca_imagenet_100(batch_size=256)
+    # pca_imagenet_100(batch_size=256)
+    pca_imagenet_100(batch_size=256, num_labels=10)
