@@ -3,8 +3,6 @@ import torch
 from torch import nn
 import logging
 
-# Scheduler
-
 class Writer:
     def __init__(self, fname: str):
         self.fname = fname

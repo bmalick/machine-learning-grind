@@ -40,6 +40,40 @@ def linear_example():
 
     plt.show()
 
+def linear_example2():
+    N = 50
+    mu = np.array([0.5, 1.0])
+    sigma = np.array([[0.33, 0.46], [0.33, 0.76]])
+    X = np.random.multivariate_normal(mean=mu, cov=sigma, size=N)
+
+    n_components = 2
+    model = pca.PCA(n_components=n_components)
+    model.fit(X)
+
+    w0 = model.centered
+    w1 = model.eigenvectors[:, 0]
+    w2 = model.eigenvectors[:, 1]
+
+    plt.figure()
+    ax = plt.subplot(1,1,1)
+    ax.scatter(X[:, 0], X[:, 1], alpha=0.8)
+    ax.set_title("Principal components")
+    x = np.linspace(-2,2,600)
+    y = - (x - w0[0]) * w2[0] / w2[1] + w0[1]
+    ax.plot(x,y, c="black", linestyle="--")
+    ax.scatter(*w0, c="black")
+    ax.text(*(w0-0.2), r"$w_0$")
+    ax.text(*(w0+0.2), r"$w_1$", color="red")
+    ax.annotate("", xytext=(w0[0], w0[1]), xy=(w0[0] + w1[0], w0[1] + w1[1]),
+                arrowprops=dict(
+                    arrowstyle="->", color="red", lw=2
+                ))
+
+    ax.grid(linestyle="--")
+    ax.set_xlim([-1,2])
+    plt.savefig("pca-case-ex.png")
+    plt.show()
+
 
 def digits():
     N = 5000
@@ -184,6 +218,7 @@ def swiss_roll_pca():
 if __name__ == "__main__":
     functions = [
         linear_example,
+        linear_example2,
         digits, digits_kpca,
         moons, moons_kpca,
         swiss_roll, swiss_roll_pca
