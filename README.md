@@ -21,6 +21,7 @@
 - [Gaussian Processes](00-stats/06-gaussian-process)
 - [Bayesian Inference](00-stats/07-bayesian-inference)
 - [Gaussian Discriminant Analysis](00-stats/05-gda)
+- [EM Algorithm](00-stats/09-em-algorithm/main.ipynb)
 
 
 [Neural Networks](#neural-networks)
@@ -42,7 +43,7 @@
 - [Language modeling](11-nlp/02-language-modeling)
 
 [Generative Adversarial Networks](#generative-adversarial-networks)
-- [GANs: Introduction](07-gans/00-intro)
+- [GANs: Introduction](07-gans/00-intro/main.ipynb)
 
 [Time Series](#time-series)
 

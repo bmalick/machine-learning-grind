@@ -75,8 +75,8 @@ class ImageNet100:
         plt.show()
 
 class FancyPCA:
-    def __init__(self):
-        with open("imagenet-100-pca.json", "r") as f:
+    def __init__(self, file="imagenet-100-pca.json"):
+        with open(file, "r") as f:
             pca_data = json.load(f)
         self.eigvecs = torch.tensor(pca_data["eigvecs"])
         self.eigvals = torch.tensor(pca_data["eigvals"])
