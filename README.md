@@ -43,7 +43,9 @@
 - [Language modeling](11-nlp/02-language-modeling)
 
 [Generative Adversarial Networks](#generative-adversarial-networks)
-- [GANs: Introduction](07-gans/00-intro/main.ipynb)
+- [GAN: Introduction](07-image-generation/00-intro/main.ipynb)
+- [Conditional GAN](07-image-generation/02-cond-gan/main.ipynb)
+- [DCGAN](07-image-generation/01-dcgan/main.ipynb)
 
 [Time Series](#time-series)
 
