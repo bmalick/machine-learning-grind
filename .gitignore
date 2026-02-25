@@ -20,3 +20,4 @@ FashionMNIST/
 train_slurm.py
 imagenet-100
 mnist
+MNIST
