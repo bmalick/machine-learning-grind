@@ -37,10 +37,12 @@
 - [LeNet](04-cnn/03-le-net/main.ipynb)
 - [AlexNet](04-cnn/04-alex-net/main.ipynb)
 - [VGGNet](04-cnn/05-vgg-net/main.ipynb)
+- [U-Net](2-segmentation/01-unet/main.ipynb)
 
 [Natural Language Processing](#natural-language-processing)
 - [Introduction: tokenization, bag of words/ngrams, tfidf](11-nlp/01-introduction)
 - [Language modeling](11-nlp/02-language-modeling)
+- [RNNs](05-rnn/01-rnn/main.ipynb)
 
 [Generative Adversarial Networks](#generative-adversarial-networks)
 - [GAN: Introduction](07-image-generation/00-intro/main.ipynb)
