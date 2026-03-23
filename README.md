@@ -43,6 +43,8 @@
 - [Introduction: tokenization, bag of words/ngrams, tfidf](11-nlp/01-introduction)
 - [Language modeling](11-nlp/02-language-modeling)
 - [RNNs](05-rnn/01-rnn/main.ipynb)
+- [LSTMs](05-rnn/03-lstms/main.ipynb)
+- [GRUs](05-rnn/04-gru/main.ipynb)
 
 [Generative Adversarial Networks](#generative-adversarial-networks)
 - [GAN: Introduction](07-image-generation/00-intro/main.ipynb)
