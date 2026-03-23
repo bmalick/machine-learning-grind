@@ -45,6 +45,7 @@
 - [RNNs](05-rnn/01-rnn/main.ipynb)
 - [LSTMs](05-rnn/03-lstms/main.ipynb)
 - [GRUs](05-rnn/04-gru/main.ipynb)
+- [Deep RNNs](05-rnn/05-deep-rnn/main.ipynb)
 
 [Generative Adversarial Networks](#generative-adversarial-networks)
 - [GAN: Introduction](07-image-generation/00-intro/main.ipynb)
