@@ -47,6 +47,8 @@
 - [GRUs](05-rnn/04-gru/main.ipynb)
 - [Deep RNNs](05-rnn/05-deep-rnn/main.ipynb)
 - [Bidirectional RNNs](05-rnn/06-bidirectional-rnn/main.ipynb)
+- [Seq2Seq Encoder Decoder](05-rnn/08-seq2seq/main.ipynb)
+- [Seq2Seq Attention Encoder Decoder](06-transformers/01-attention/main.ipynb)
 
 
 [Generative Adversarial Networks](#generative-adversarial-networks)
