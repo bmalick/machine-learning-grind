@@ -20,6 +20,8 @@ FashionMNIST/
 train_slurm.py
 imagenet-100
 mnist
+mnist
 MNIST
 unet-data
 main_files/
+data/

@@ -52,7 +52,7 @@
 
 
 [Generative Adversarial Networks](#generative-adversarial-networks)
-- [GAN: Introduction](07-image-generation/00-intro/main.ipynb)
+- [GAN: Introduction](07-image-generation/00-intro-to-gans/main.ipynb)
 - [Conditional GAN](07-image-generation/02-cond-gan/main.ipynb)
 - [DCGAN](07-image-generation/01-dcgan/main.ipynb)
 - [InfoGAN](07-image-generation/03-infogan/main.ipynb)
