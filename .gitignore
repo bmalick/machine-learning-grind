@@ -25,3 +25,4 @@ MNIST
 unet-data
 main_files/
 data/
+logs/
