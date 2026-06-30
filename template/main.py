@@ -104,8 +104,10 @@ class Trainer:
         self.metric_funcs = [
             lambda x,y: (x.argmax(dim=-1)==y).float().mean()
         ]
-        self.perstep_metrics = {n: {"train": [], "eval": []} for n in self.metric_names}
-        self.perepoch_metrics = {n: {"train": [], "eval": []} for n in self.metric_names}
+        self.metrics = {
+            "perstep": {n: {"train": [], "eval": []} for n in self.metric_names},
+            "perepoch": {n: {"train": [], "eval": []} for n in self.metric_names},
+        }
 
     def compute_metrics(self, y_hat, y_true):
         assert len(self.metric_names)==len(self.metric_funcs)
@@ -129,19 +131,21 @@ class Trainer:
         self.train_steps = 0
         self.eval_steps = 0
 
-        self.perstep_losses = {"train": [], "eval": []}
-        self.perepoch_losses = {"train": [], "eval": []}
+        self.losses = {
+            "perstep":  {"loss": {"train": [], "eval": []}},
+            "perepoch": {"loss": {"train": [], "eval": []}},
+        }
 
         for _ in range(self.config.max_epochs):
             self.train_step()
             self.eval_step()
 
             if self.current_epoch % self.config.eval_interval == 0:
-                metrics_str = " | ".join([f"train_{k}: {v['train'][-1]:.5f} | eval_{k}: {v['eval'][-1]:.5f}" for k, v in self.perepoch_metrics.items()])
+                metrics_str = " | ".join([f"train_{k}: {v['train'][-1]:.5f} | eval_{k}: {v['eval'][-1]:.5f}" for k, v in self.metrics["perepoch"].items()])
                 print(
                     f"Epoch: {self.current_epoch:3d} | "
-                    f"train_loss: {self.perepoch_losses['train'][-1]:.5f} | "
-                    f"eval_loss: {self.perepoch_losses['eval'][-1]:.5f} | "
+                    f"train_loss: {self.losses['perepoch']['loss']['train'][-1]:.5f} | "
+                    f"eval_loss: {self.losses['perepoch']['loss']['eval'][-1]:.5f} | "
                     f"{metrics_str}"
                 )
 
@@ -149,7 +153,8 @@ class Trainer:
 
         self.writer.close()
         self.save_model()
-        self.make_plots()
+        self.make_plots(self.losses)
+        self.make_plots(self.metrics)
         self.save_logs()
 
     def train_step(self):
@@ -173,22 +178,22 @@ class Trainer:
 
             metrics = self.compute_metrics(out, batch[-1])
             for k,v in metrics.items():
-                self.perstep_metrics[k]["train"].append(v)
+                self.metrics["perstep"][k]["train"].append(v)
                 self.writer.add_scalar(f"perstep_{k}/train", v, self.train_steps)
                 epoch_metrics[k] += v * bs
 
-            self.perstep_losses["train"].append(loss.item())
+            self.losses["perstep"]["loss"]["train"].append(loss.item())
             self.writer.add_scalar("perstep_loss/train", loss.item(), self.train_steps)
 
 
             self.train_steps += 1
         
         for k,v in epoch_metrics.items():
-            self.perepoch_metrics[k]["train"].append(v/num_instances )
+            self.metrics["perepoch"][k]["train"].append(v/num_instances )
             self.writer.add_scalar(f"perepoch_{k}/train", v/num_instances, self.current_epoch)
 
         epoch_loss /= num_instances
-        self.perepoch_losses["train"].append(epoch_loss)
+        self.losses["perepoch"]["loss"]["train"].append(epoch_loss)
         self.writer.add_scalar("perepoch_loss/train", epoch_loss, self.current_epoch)
 
 
@@ -210,60 +215,68 @@ class Trainer:
 
             metrics = self.compute_metrics(out, batch[-1])
             for k,v in metrics.items():
-                self.perstep_metrics[k]["eval"].append(v)
+                self.metrics["perstep"][k]["eval"].append(v)
                 self.writer.add_scalar(f"perstep_{k}/eval", v, self.eval_steps)
                 epoch_metrics[k] += v * bs
 
-            self.perstep_losses["eval"].append(loss.item())
+            self.losses["perstep"]["loss"]["eval"].append(loss.item())
             self.writer.add_scalar("perstep_loss/eval", loss.item(), self.eval_steps)
 
             self.eval_steps += 1
         
         for k,v in epoch_metrics.items():
-            self.perepoch_metrics[k]["eval"].append(v/num_instances )
+            self.metrics["perepoch"][k]["eval"].append(v/num_instances )
             self.writer.add_scalar(f"perepoch_{k}/eval", v/num_instances, self.current_epoch)
 
         epoch_loss /= num_instances
-        self.perepoch_losses["eval"].append(epoch_loss)
+        self.losses["perepoch"]["loss"]["eval"].append(epoch_loss)
         self.writer.add_scalar("perepoch_loss/eval", epoch_loss, self.current_epoch)
 
-    def make_plots(self):
-        fig, ax = plt.subplots(figsize=self.config.figsize)
-        for split, values in self.perepoch_losses.items():
-            if self.config.figlog:
-                ax.semilogy(values, label=split, linestyle="-" if split=="train" else "--")
-            else:
-                ax.plot(values, label=split, linestyle="-" if split=="train" else "--")
-            if self.config.figgrid: ax.grid()
-        ax.legend()
-        ax.set_xlabel("epochs")
-        ax.set_title("loss")
-        fig.savefig(os.path.join(self.config.logdir, "loss.jpg"))
-        plt.close()
-
-        for name,values in self.perepoch_metrics.items():
-            fig, ax = plt.subplots(figsize=self.config.figsize)
-            for split, v in values.items():
-                if self.config.figlog:
-                    ax.semilogy(v, label=split, linestyle="-" if split=="train" else "--")
-                else:
-                    ax.plot(v, label=split, linestyle="-" if split=="train" else "--")
-                if self.config.figgrid: ax.grid()
-            ax.legend()
-            ax.set_xlabel("epochs")
-            ax.set_title(name)
-            fig.savefig(os.path.join(self.config.logdir, f"{name}.jpg"))
+    def make_plots(self, metrics):
+        for plot_name, m_values in metrics.items():
+            for name,values in m_values.items():
+                fig, ax = plt.subplots(figsize=self.config.figsize)
+                for split, v in values.items():
+                    if self.config.figlog:
+                        ax.semilogy(v, label=split, linestyle="-" if split=="train" else "--")
+                    else:
+                        ax.plot(v, label=split, linestyle="-" if split=="train" else "--")
+                    if self.config.figgrid: ax.grid()
+                ax.legend()
+                ax.set_xlabel(plot_name.replace("per","")+"s")
+                ax.set_title(name)
+                fig.savefig(os.path.join(self.config.logdir, f"{name}-{plot_name}.jpg"))
+                plt.close()
             plt.close()
 
-    def save_logs(self):
-        fname = os.path.join(self.config.logdir, "losses.json")
-        with open(fname, "w") as f:
-            json.dump({"perstep": self.perstep_losses, "perepoch": self.perepoch_losses}, f)
-        print(f"Save losses at {fname}")
+    def compare_plots(self, metrics_a, metrics_b, other_trainer):
+        for pername in ["perstep", "perepoch"]:
+            for loss_name in metrics_a[pername]:
+                fig, ax = plt.subplots(figsize=self.config.figsize)
+                for (split1,value1), (split2,value2) in zip(metrics_a[pername][loss_name].items(), metrics_b[pername][loss_name].items()):
+                    if self.config.figlog:
+                        if len(value1):
+                            ax.semilogy(value1, label=f"{self.config.run_name} {loss_name}/{split1}", linestyle="-" if split1=="train" else "--")
+                        if len(value2):
+                            ax.semilogy(value2, label=f"{other_trainer.config.run_name} {loss_name}/{split2}", linestyle="-" if split2=="train" else "--")
+                    else:
+                        if len(value1):
+                            ax.plot(value1, label=f"{self.config.run_name} {loss_name}/{split1}", linestyle="-" if split1=="train" else "--")
+                        if len(value2):
+                            ax.plot(value2, label=f"{other_trainer.config.run_name} {loss_name}/{split2}", linestyle="-" if split2=="train" else "--")
+                    if self.config.figgrid: ax.grid()
+                ax.legend()
+                ax.set_xlabel(pername.replace("per","")+"s")
+                ax.set_title(loss_name)
+                compare_dir = f"{self.config.run_id}-vs-{other_trainer.config.run_id}"
+                os.makedirs(compare_dir, exist_ok=True)
+                fig.savefig(os.path.join(compare_dir, f"{pername}-{loss_name}.jpg"))
+                plt.close()
 
-        fname = os.path.join(self.config.logdir, "metrics.json")
+    def save_logs(self):
+        fname = os.path.join(self.config.logdir, "losses-metrics.json")
         with open(fname, "w") as f:
-            json.dump({"perstep": self.perstep_metrics, "perepoch": self.perepoch_metrics}, f)
+            json.dump({"losses": self.losses, "metrics": self.metrics}, f)
         print(f"Save metrics at {fname}")
 
 if __name__ == "__main__":
