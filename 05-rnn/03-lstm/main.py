@@ -107,34 +107,44 @@ class ModuleConfig:
     sigma: float = 0.01
     num_inputs: int = 4580
 
-class RNNfromScratch(nn.Module): # RNN cell
+class LSTMfromScratch(nn.Module):
     def __init__(self, config):
-        super(RNNfromScratch, self).__init__()
+        super(LSTMfromScratch, self).__init__()
+        self.config = config
+        init_weight = lambda *shape: nn.Parameter(torch.randn(*shape) * config.sigma)
+        triple = lambda: (init_weight(config.num_inputs, config.num_hiddens),
+                          init_weight(config.num_hiddens, config.num_hiddens),
+                          nn.Parameter(torch.zeros(config.num_hiddens)))
+        self.W_xi, self.W_hi, self.b_i = triple() # input gate
+        self.W_xf, self.W_hf, self.b_f = triple() # forget gate
+        self.W_xo, self.W_ho, self.b_o = triple() # output gate
+        self.W_xc, self.W_hc, self.b_c = triple() # input node
+
         self.num_hiddens = config.num_hiddens
         self.sigma = config.sigma
-        self.W_xh = nn.Parameter(torch.randn((config.num_inputs, config.num_hiddens)) * config.sigma)
-        self.W_hh = nn.Parameter(torch.randn(config.num_hiddens, config.num_hiddens) * config.sigma)
-        self.b_h = nn.Parameter(torch.zeros(config.num_hiddens))
-    
-    def forward(self, inputs, state=None):
-        # inputs shape is: (num_steps, batch_size, num_inputs)
-        if state is None:
-            # inputs.size(1) is batch_size
-            state = torch.zeros((inputs.size(1), self.num_hiddens), device=inputs.device)
-        else: state, = state
+
+    def forward(self, inputs, H_C=None):
+        if H_C is None:
+            H = torch.zeros((inputs.shape[1], self.num_hiddens), device=inputs.device)
+            C = torch.zeros((inputs.shape[1], self.num_hiddens), device=inputs.device)
+        else:
+            H, C = H_C
         outputs = []
-        for x in inputs: # shape of inputs: (num_steps, batch_size, num_inputs)
-            # for each step
-            # print(f"sequence {len(outputs)} shape:", x.shape)
-            state = torch.tanh(torch.matmul(x, self.W_xh) + torch.matmul(state, self.W_hh) + self.b_h)
-            outputs.append(state)
-        return outputs, state
+        for X in inputs:
+            I = torch.sigmoid(torch.matmul(X, self.W_xi) + torch.matmul(H, self.W_hi) + self.b_i)
+            F = torch.sigmoid(torch.matmul(X, self.W_xf) + torch.matmul(H, self.W_hf) + self.b_f)
+            O = torch.sigmoid(torch.matmul(X, self.W_xo) + torch.matmul(H, self.W_ho) + self.b_o)
+            C_tilde = torch.tanh(torch.matmul(X, self.W_xc) + torch.matmul(H, self.W_hc) + self.b_c)
+            C = F * C + I * C_tilde
+            H = O * torch.tanh(C)
+            outputs.append(H)
+        return outputs, (H,C)
 
 class RNNLMfromScratch(nn.Module):
     def __init__(self, config):
         super(RNNLMfromScratch, self).__init__()
         self.config = config
-        rnn = RNNfromScratch(config)
+        rnn = LSTMfromScratch(config)
         self.W_hq = nn.Parameter(torch.randn(rnn.num_hiddens, config.vocab_size) * rnn.sigma)
         self.b_q = nn.Parameter(torch.zeros(config.vocab_size))
         self.vocab_size = config.vocab_size
@@ -150,12 +160,11 @@ class RNNLMfromScratch(nn.Module):
         return F.one_hot(x.T, self.vocab_size).type(torch.float32)
 
     def forward(self, x, state=None, targets=None):
-        embeddings = self.one_hot(x)
-        # print(embeddings.shape)
-        rnn_outputs, state = self.rnn(embeddings, state)
+        embeds = self.one_hot(x)
+        rnn_outputs, state = self.rnn(embeds, state)
         outputs = [torch.matmul(H, self.W_hq) + self.b_q for H in rnn_outputs]
-        # for o in outputs: print(o.shape); break
         out = torch.stack(outputs, dim=1)
+
         loss = None
         if targets is not None:
             loss = self.compute_loss(out, targets)
@@ -183,11 +192,11 @@ def grad_clip(clip_val, model):
 
 @dataclass
 class TrainConfig:
-    run_name: str = "run"
+    run_name: str = "lstm"
     max_epochs: int = 100
     eval_interval: int = 10
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
-    learning_rate: float = 1.
+    learning_rate: float = 4.
     clip_val: float = 1.
     save_model: bool = True
     figsize: tuple[float, float] = (8., 4.5)
@@ -386,6 +395,8 @@ class Trainer:
 
 if __name__ == "__main__":
     # !wget -O timemachine.txt http://d2l-data.s3-accelerate.amazonaws.com/timemachine.txt
+    # !rm -rf logs
+
 
     datamodule = DataModule(DataConfig())
     module = RNNLMfromScratch(ModuleConfig(num_inputs=datamodule.vocab_size, vocab_size=datamodule.vocab_size))
