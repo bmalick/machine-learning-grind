@@ -105,7 +105,7 @@ class VariationalAutoEncoder(nn.Module):
             loss, log_p, kl_div = self.compute_loss(x, prior, p_x_given_z, q_z_given_x)
         return p_x_given_z, (loss, log_p, kl_div)
 
-class VariationalAutoEncoderMPL(VariationalAutoEncoder):
+class VariationalAutoEncoderMLP(VariationalAutoEncoder):
     def __init__(self, config):
         super().__init__(config)
         hidden_dim = config.hidden_dim
@@ -370,7 +370,7 @@ if __name__ == "__main__":
     # !rm -rf logs
 
     datamodule = DataModule(DataConfig())
-    auto_enc_mlp = VariationalAutoEncoderMPL(ModuleConfig(hidden_dim=500))
+    auto_enc_mlp = VariationalAutoEncoderMLP(ModuleConfig(hidden_dim=500))
     mlp_trainer = Trainer(TrainConfig(run_name="mlp_auto_enc"), datamodule, auto_enc_mlp)
     mlp_trainer.fit()
 
