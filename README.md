@@ -57,6 +57,7 @@
 - [DCGAN](07-image-generation/01-dcgan)
 - [InfoGAN](07-image-generation/03-infogan)
 - [Least squares GAN](07-image-generation/04-least-squares-gan)
+- [VAE](07-image-generation/06-vae)
 
 [Time Series](#time-series)
 
