@@ -10,34 +10,23 @@ import torch.nn.functional as F
 from dataclasses import dataclass
 from torch.utils.tensorboard import SummaryWriter
 
+
 torch.manual_seed(42)
 
 # ----------------- Data -----------------
+
 @dataclass
 class DataConfig:
-    train_batch_size: int = 128
-    eval_batch_size: int = 128
+    train_batch_size: int = 8
+    eval_batch_size: int = 8
     num_workers: int = 2
-
-    resize: tuple[int, int] = (28,28)
-    root: str = "."
 
 class DataModule:
     def __init__(self, config):
         self.config = config
-        self.train_dataloader = None
-        self.eval_dataloader = None
 
-        trans = torchvision.transforms.Compose([
-            torchvision.transforms.Resize(config.resize),
-            torchvision.transforms.ToTensor()
-        ])
-
-        self.train = torchvision.datasets.FashionMNIST(
-            root=config.root, train=True, transform=trans, download=True)
-        self.eval = torchvision.datasets.FashionMNIST(
-            root=config.root, train=False, transform=trans, download=True)
-
+        self.train = None
+        self.eval = None
         self.train_dataloader = self.get_dataloader(True)
         self.eval_dataloader = self.get_dataloader(False)
 
@@ -53,31 +42,19 @@ class DataModule:
 
 @dataclass
 class ModuleConfig:
-    num_classes: int = 10
+    num_blocks: int = 2
 
-def init_cnn(module: nn.Module):
-    if type(module) == nn.Linear or type(module)==nn.Conv2d:
-        nn.init.xavier_uniform_(module.weight)
 
-class LeNet(nn.Module):
+class Module(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
-        self.net = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, padding=2), nn.Sigmoid(),
-            nn.AvgPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, padding=0), nn.Sigmoid(),
-            nn.AvgPool2d(kernel_size=2, stride=2),
-            nn.Flatten(),
-            nn.Linear(in_features=400, out_features=120), nn.Sigmoid(),
-            nn.Linear(in_features=120, out_features=84), nn.Sigmoid(),
-            nn.Linear(in_features=84, out_features=config.num_classes),
-        )
-        self.apply(init_cnn)
-
 
     def compute_loss(self, y_hat, y_true):
-        return F.cross_entropy(y_hat, y_true)
+        raise NotImplementedError
+
+    def number_of_params():
+        pass
 
     def forward(self, x, targets=None):
         out = self.net(x)
@@ -91,11 +68,11 @@ class LeNet(nn.Module):
 
 @dataclass
 class TrainConfig:
-    run_name: str = "lenet"
+    run_name: str = "run"
     max_epochs: int = 10
     eval_interval: int = 1
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
-    learning_rate: float = 1e-1
+    learning_rate: float = 1e-3
     save_model: bool = True
     figsize: tuple[float, float] = (8., 4.5)
     figlog: bool = False
@@ -123,10 +100,9 @@ class Trainer:
         self.optimizer = torch.optim.SGD(self.model.parameters(), self.config.learning_rate)
 
     def configure_metrics(self):
-        self.metric_names = ["acc"]
-        self.metric_funcs = [
-            lambda x,y: (x.argmax(dim=-1)==y).float().mean()
-        ]
+        # self.metric_names = []
+        # self.metric_funcs = [
+        # ]
         self.perstep_metrics = {n: {"train": [], "eval": []} for n in self.metric_names}
         self.perepoch_metrics = {n: {"train": [], "eval": []} for n in self.metric_names}
 
@@ -291,7 +267,6 @@ class Trainer:
 
 if __name__ == "__main__":
     datamodule = DataModule(DataConfig())
-    module = LeNet(ModuleConfig())
+    module = Module(ModuleConfig())
     trainer = Trainer(TrainConfig(), datamodule, module)
     trainer.fit()
-

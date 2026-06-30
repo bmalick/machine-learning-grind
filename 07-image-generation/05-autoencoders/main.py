@@ -140,7 +140,7 @@ if __name__ == "__main__":
     run_name = f"latent-dim-{latent_dim}--hidden-dim-{hidden_dim}--lr-{lr}--epochs-{num_epochs}"
 
     os.makedirs(run_name, exist_ok=True)
-    fixed_batch = next(iter(get_mnist(batch_size=36)))[0]
+    fixed_batch = next(iter(get_mnist(batch_size=36)))[0].to(device)
     show_images(fixed_batch, nrow=12, save_name=f"{run_name}/original-samples.jpg", figsize=(19.2,10.8), show=False)
     dataloader = get_mnist(batch_size=1024)
 
