@@ -5,13 +5,13 @@
 ## Generated digits
 
 - MLP version which is closer to the one presented in the paper.
-![](./logs/mlp_auto_enc--20260630-214405/visualizations/024.jpg)
+![](./logs/mlp-vae--20260712-165845/visualizations/024.jpg)
 
 - Convolution layers verion
-![](./logs/conv_auto_enc--20260630-214456/visualizations/024.jpg)
+![](./logs/conv-vae--20260712-165941/visualizations/024.jpg)
 
 ## Losses
 
-![](./mlp_auto_enc--20260630-214405-vs-conv_auto_enc--20260630-214456/perstep-elbo.jpg)
-![](./mlp_auto_enc--20260630-214405-vs-conv_auto_enc--20260630-214456/perstep-log_p.jpg)
-![](./mlp_auto_enc--20260630-214405-vs-conv_auto_enc--20260630-214456/perstep-kl_div.jpg)
+![](./mlp-vae-vs-conv-vae/perstep-elbo.jpg)
+![](./mlp-vae-vs-conv-vae/perstep-log_p.jpg)
+![](./mlp-vae-vs-conv-vae/perstep-kl_div.jpg)
