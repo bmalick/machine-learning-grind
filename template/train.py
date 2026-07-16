@@ -7,14 +7,16 @@ from dataclasses import dataclass
 import dataclasses
 from torch.utils.tensorboard import SummaryWriter
 
-from data import show_images
-
 @dataclass
 class TrainConfig:
-    run_name: str = "vae"
-    max_epochs: int = 25
+    run_name: str = "run"
+    max_epochs: int = 100
+    max_iters: int = 60000
+    weight_decay: float = 1e-2
     lr: float = 1e-3
-    device: str = "cuda" if torch.cuda.is_available() else "cpu"
+    weight_decay: float = 0.
+    grad_accum_steps: int = 8
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
     init_from: str = "scratch"
     resume_logdir: str|None = None
@@ -26,8 +28,6 @@ class TrainConfig:
 
     figsize: tuple[float, float] = (8., 4.5)
     plot_interval: int = 5
-    genviz: bool = True
-    show_gen: bool = False
 
     def __post_init__(self):
         if self.init_from == "scratch":
@@ -38,23 +38,30 @@ class TrainConfig:
             os.makedirs(self.logdir, exist_ok=True)
             self.model_save_fname = os.path.join(self.logdir, self.run_name+".pt")
 
+class Scheduler:
+    def __init__(self, config):
+        pass
+
+    def __call__(self, it):
+        pass
+
 class Trainer:
-    def __init__(self, config, datamodule, model, fixed_batch, init_train_info: dict|None = None):
+    def __init__(self, config, datamodule, model, init_train_info: dict|None = None):
         self.config = config
         self.datamodule = datamodule
         self.model = model
         self.init_train_info = init_train_info
         self.writer = SummaryWriter(log_dir=config.logdir)
-        self.fixed_batch = fixed_batch.to(config.device)
         self.device = torch.device(config.device)
 
     def to_device(self, batch):
         return [a.to(self.device) for a in batch]
 
     def configure_optimizers(self):
-        self.optimizer = torch.optim.Adam(self.model.parameters(), self.config.lr)
+        self.optimizer = torch.optim.SGD(self.model.parameters(), self.config.lr)
         if self.init_train_info is not None:
             self.optimizer.load_state_dict(self.init_train_info["opt_state_dict"])
+        self.scheduler = None
 
     def configure_metrics(self):
         self.metric_names = []
@@ -75,7 +82,7 @@ class Trainer:
         self.configure_metrics()
 
         self.history = {
-                **{n: {**{ln: {"train": [], "eval": []} for ln in ["loss", "elbo", "log_p", "kl_div"]},
+            **{n: {"loss": {"train": [], "eval": []},
                    **{m: {"train": [], "eval": []} for m in self.metric_names}}
                for n in ["perstep", "perepoch"]}
         } if self.init_train_info is None else self.init_train_info["history"]
@@ -108,29 +115,39 @@ class Trainer:
         epoch_history  = {k: 0.0 for k in self.history["perstep"]}
         n_dataloader = len(self.datamodule.train_dataloader)
 
-        for step_num, batch in enumerate(self.datamodule.train_dataloader):
-            x, y = self.to_device(batch)
-            p_x_given_z, (loss, log_p, kl_div) = self.model(x, x)
+        accum_steps = self.config.grad_accum_steps
+        self.optimizer.zero_grad()
 
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
+        for step_num, batch in enumerate(self.datamodule.train_dataloader):
+            batch = self.to_device(batch)
+            out, loss = self.model(*batch[:-1], batch[-1])
+
+            scaled_loss = loss / accum_steps
+            scaled_loss.backward()
 
             B = batch[-1].size(0)
             num_instances += B
-            # global_step = epoch_num * n_dataloader + step_num
+            global_step = epoch_num * n_dataloader + step_num
 
-            epoch_history["loss"] += loss.item() * B
-            epoch_history["elbo"] += - loss.item() * B
-            epoch_history["log_p"] += log_p.item() * B
-            epoch_history["kl_div"] += kl_div.item() * B
+            true_loss = loss.item()
+            epoch_history["loss"] += true_loss * B
+            self.history["perstep"]["loss"]["train"].append(true_loss)
 
-            self.history["perstep"]["loss"]["train"].append(loss.item())
-            self.history["perstep"]["elbo"]["train"].append(-loss.item())
-            self.history["perstep"]["log_p"]["train"].append(log_p.item())
-            self.history["perstep"]["kl_div"]["train"].append(kl_div.item())
+            step_metrics = self.compute_metrics(out, batch[-1])
+            for k, v in step_metrics.items():
+                self.history["perstep"][k]["train"].append(v)
+                epoch_history[k] += v * B
+
+            # gradient accumulation
+            is_last_batch = (step_num + 1) == n_dataloader
+            if (step_num + 1) % accum_steps == 0 or is_last_batch:
+                if self.scheduler is not None:
+                    for pg in self.optimizer.param_groups:
+                        pg["lr"] = self.scheduler(global_step)
 
                 # gn = torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.config.grad_clip)
+                self.optimizer.step()
+                self.optimizer.zero_grad()
 
         for k, v in epoch_history.items():
             self.history["perepoch"][k]["train"].append(v / num_instances)
@@ -138,18 +155,47 @@ class Trainer:
     def eval_step(self, epoch_num):
         self.model.eval()
 
-        if self.config.genviz:
-            os.makedirs(os.path.join(self.config.logdir, "visualizations"), exist_ok=True)
-            with torch.no_grad():
-                p_x_given_z, _ = self.model(self.fixed_batch)
-                # reconstructed = sample(p_x_given_z)
-                reconstructed = p_x_given_z[0]
-                reconstructed = reconstructed.view_as(self.fixed_batch)
-                show_images(reconstructed, nrow=12, figsize=(19.2,10.8), show=self.config.show_gen,
-                            save_name=os.path.join(self.config.logdir, f"visualizations/{epoch_num:03d}.jpg"))
+        num_instances = 0
+        epoch_history  = {k: 0.0 for k in self.history["perstep"]}
 
-        log_str = " | ".join([f"train_{k}: {v['train'][-1]:.5f}" for k, v in self.history["perepoch"].items()])
-        print(f"Epoch: {epoch_num:3d} | {log_str}")
+        for step_num, batch in enumerate(self.datamodule.eval_dataloader):
+            batch = self.to_device(batch)
+            with torch.no_grad():
+                out, loss = self.model(*batch[:-1], batch[-1])
+            step_metrics = self.compute_metrics(out, batch[-1])
+
+            B = batch[-1].size(0)
+            num_instances += B
+            epoch_history["loss"] += loss.item() * B
+
+            global_step =  epoch_num * len(self.datamodule.eval_dataloader) + step_num
+            for k,v in step_metrics.items():
+                self.history["perstep"][k]["eval"].append(v)
+                epoch_history[k] += v * B
+
+            self.history["perstep"]["loss"]["eval"].append(loss.item())
+
+        for k,v in epoch_history.items():
+            self.history["perepoch"][k]["eval"].append(v / num_instances)
+
+        log_str = " | ".join([f"train_{k}: {v['train'][-1]:.5f} | eval_{k}: {v['eval'][-1]:.5f}" for k, v in self.history["perepoch"].items()])
+        log_str += f" | lr: {self.scheduler(epoch_num):.7f}" if self.scheduler is not None else ""
+
+        if self.config.save_checkpoint and epoch_num > 0 and self.history["perstep"]["loss"]["eval"][-1] < self.best_eval_loss:
+            self.best_eval_loss = self.history["perstep"]["loss"]["eval"][-1]
+            checkpoint = {
+                "epoch_num": epoch_num,
+                "best_eval_loss": self.best_eval_loss,
+                "train_config": dataclasses.asdict(self.config),
+                "model_config": dataclasses.asdict(self.model.config),
+                "model": self.model.state_dict(),
+                "optimizer": self.optimizer.state_dict(),
+                "history": self.history
+            }
+            log_str += f" | save checkpoint at {self.config.logdir}"
+            torch.save(checkpoint, os.path.join(self.config.logdir, "ckpt.pt"))
+
+        print(f"Epoch: {epoch_num:03d} | {log_str}")
 
     def save_model(self):
         if self.config.save_model:

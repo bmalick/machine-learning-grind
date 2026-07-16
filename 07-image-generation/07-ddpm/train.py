@@ -4,16 +4,15 @@ import torch
 from datetime import datetime
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
-import dataclasses
 from torch.utils.tensorboard import SummaryWriter
 
 from data import show_images
 
 @dataclass
 class TrainConfig:
-    run_name: str = "vae"
-    max_epochs: int = 25
-    lr: float = 1e-3
+    run_name: str = "ddpm"
+    max_epochs: int = 100
+    lr: float = 2e-4
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
     init_from: str = "scratch"
@@ -26,6 +25,7 @@ class TrainConfig:
 
     figsize: tuple[float, float] = (8., 4.5)
     plot_interval: int = 5
+    inference_interval: int = 1
     genviz: bool = True
     show_gen: bool = False
 
@@ -39,13 +39,13 @@ class TrainConfig:
             self.model_save_fname = os.path.join(self.logdir, self.run_name+".pt")
 
 class Trainer:
-    def __init__(self, config, datamodule, model, fixed_batch, init_train_info: dict|None = None):
+    def __init__(self, config, datamodule, model, xT, init_train_info: dict|None = None):
         self.config = config
         self.datamodule = datamodule
         self.model = model
         self.init_train_info = init_train_info
         self.writer = SummaryWriter(log_dir=config.logdir)
-        self.fixed_batch = fixed_batch.to(config.device)
+        self.xT = xT.to(config.device)
         self.device = torch.device(config.device)
 
     def to_device(self, batch):
@@ -75,7 +75,7 @@ class Trainer:
         self.configure_metrics()
 
         self.history = {
-                **{n: {**{ln: {"train": [], "eval": []} for ln in ["loss", "elbo", "log_p", "kl_div"]},
+                **{n: {**{ln: {"train": [], "eval": []} for ln in ["loss", "elbo"]},
                    **{m: {"train": [], "eval": []} for m in self.metric_names}}
                for n in ["perstep", "perepoch"]}
         } if self.init_train_info is None else self.init_train_info["history"]
@@ -106,11 +106,16 @@ class Trainer:
 
         num_instances = 0
         epoch_history  = {k: 0.0 for k in self.history["perstep"]}
-        n_dataloader = len(self.datamodule.train_dataloader)
 
         for step_num, batch in enumerate(self.datamodule.train_dataloader):
-            x, y = self.to_device(batch)
-            p_x_given_z, (loss, log_p, kl_div) = self.model(x, x)
+            if isinstance(batch, (tuple, list)):
+                x0,_ = self.to_device(batch)
+            else:
+                x0 = batch.to(self.device)
+            eps0 = torch.randn(x0.size(), device=x0.device)
+            timesteps = torch.randint(low=0, high=self.model.scheduler.T, size=(x0.size(0),1), device=x0.device)
+            xt = self.model.scheduler.add_noise(x0, eps0, timesteps)
+            out, loss = self.model(xt, timesteps, eps0)
 
             self.optimizer.zero_grad()
             loss.backward()
@@ -118,19 +123,12 @@ class Trainer:
 
             B = batch[-1].size(0)
             num_instances += B
-            # global_step = epoch_num * n_dataloader + step_num
 
             epoch_history["loss"] += loss.item() * B
             epoch_history["elbo"] += - loss.item() * B
-            epoch_history["log_p"] += log_p.item() * B
-            epoch_history["kl_div"] += kl_div.item() * B
 
             self.history["perstep"]["loss"]["train"].append(loss.item())
             self.history["perstep"]["elbo"]["train"].append(-loss.item())
-            self.history["perstep"]["log_p"]["train"].append(log_p.item())
-            self.history["perstep"]["kl_div"]["train"].append(kl_div.item())
-
-                # gn = torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.config.grad_clip)
 
         for k, v in epoch_history.items():
             self.history["perepoch"][k]["train"].append(v / num_instances)
@@ -138,15 +136,19 @@ class Trainer:
     def eval_step(self, epoch_num):
         self.model.eval()
 
-        if self.config.genviz:
+        if self.config.genviz and (epoch_num % self.config.inference_interval == 0 or epoch_num==self.config.max_epochs-1):
             os.makedirs(os.path.join(self.config.logdir, "visualizations"), exist_ok=True)
             with torch.no_grad():
-                p_x_given_z, _ = self.model(self.fixed_batch)
-                # reconstructed = sample(p_x_given_z)
-                reconstructed = p_x_given_z[0]
-                reconstructed = reconstructed.view_as(self.fixed_batch)
-                show_images(reconstructed, nrow=12, figsize=(19.2,10.8), show=self.config.show_gen,
-                            save_name=os.path.join(self.config.logdir, f"visualizations/{epoch_num:03d}.jpg"))
+                reconstructed = self.model.inference(self.xT)
+                if self.config.run_name == "ddpm-simple":
+                    reconstructed = reconstructed.detach().cpu().numpy()
+                    plt.scatter(reconstructed[:, 0], reconstructed[:, 1], s=5)
+                    plt.savefig(os.path.join(self.config.logdir, f"visualizations/{epoch_num:03d}.jpg"))
+                    plt.close()
+
+                else:
+                    show_images(reconstructed, nrow=12, figsize=(19.2,10.8), show=self.config.show_gen,
+                                save_name=os.path.join(self.config.logdir, f"visualizations/{epoch_num:03d}.jpg"), white_bg=True)
 
         log_str = " | ".join([f"train_{k}: {v['train'][-1]:.5f}" for k, v in self.history["perepoch"].items()])
         print(f"Epoch: {epoch_num:3d} | {log_str}")

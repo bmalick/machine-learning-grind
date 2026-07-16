@@ -12,6 +12,13 @@
 
 ## Losses
 
-![](./mlp-vae-vs-conv-vae/perstep-elbo.jpg)
-![](./mlp-vae-vs-conv-vae/perstep-log_p.jpg)
-![](./mlp-vae-vs-conv-vae/perstep-kl_div.jpg)
+| | |
+|:---:|:---:|
+| ![](./mlp-vae-vs-conv-vae/perstep-elbo.jpg) | ![](./mlp-vae-vs-conv-vae/perstep-log_p.jpg) |
+| ![](./mlp-vae-vs-conv-vae/perstep-kl_div.jpg) | |
+
+## Resources
+- The original paper
+- [Tutorial on Diffusion Models for Imaging and Vision](https://arxiv.org/abs/2403.18103)
+- [Understanding Deep Learning](https://udlbook.github.io/udlbook/)
+

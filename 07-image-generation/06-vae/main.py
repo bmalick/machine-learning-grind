@@ -1,19 +1,13 @@
+import os
+import json
 import torch
-
-torch.manual_seed(14)
+import matplotlib.pyplot as plt
 
 from data import DataModule, DataConfig
 from model import VariationalAutoEncoderMLP, VariationalAutoEncoderConv, ModuleConfig
 from train import TrainConfig, Trainer
 
-import os
-import json
-import matplotlib.pyplot as plt
-
-# def load_checkpoint(logdir: str, device="cpu"):
-#     ckpt_fname = os.path.join(logdir, "ckpt.pt")
-#     checkpoint = torch.load(ckpt_fname, map_location=device)
-#     return checkpoint["train_config"]["run_id"], checkpoint["history"]
+torch.manual_seed(14)
 
 def load_checkpoint(logdir: str):
     run_id = os.path.basename(logdir).split("--")[0]
