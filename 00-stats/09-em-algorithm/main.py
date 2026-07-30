@@ -154,10 +154,10 @@ def em_algorithm(K: int, X: np.ndarray, save_dir: str, eps_log: float = 1e-6, ep
 def test(K, X, eps_conv, interval=200):
     estimated_theta, probs, _, anim = em_algorithm(K=K, X=X, eps_conv=eps_conv, interval=interval, save_dir=f"em-K{K}")
     clusters = probs.argmax(axis=1)
-    anim.save(f"em-K{K}.gif",writer='pillow')
+    anim.save(f"./docs/em-K{K}.gif",writer='pillow')
     plt.title(f"culsters: K={K}")
     plt.scatter(data[:,0], data[:,1], c=clusters, alpha=0.6)
-    plt.savefig(f"em-K{K}.jpg")
+    plt.savefig(f"./docs/em-K{K}.jpg")
     plt.close()
 
 for K in range(2,6):
