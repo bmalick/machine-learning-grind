@@ -10,6 +10,7 @@ __pycache__
 *.csv
 *.zip
 *.pth
+*.pt
 *.log
 *.json
 *.yml
@@ -26,3 +27,5 @@ unet-data
 main_files/
 data/
 logs/
+*.dat
+*.npy

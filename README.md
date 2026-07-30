@@ -5,63 +5,70 @@
 > helloo ...
 > i'm studying Machine Learning and Deep Learning based on books `Understanding Deep Learning`, `Dive into Deep Learning`,  `Hands-on Machine Learning with Scikit-Learn Keras & TensorFlow` & `Machine Learning: A Probabilistic Perspective`
 
+<!-- This is like a playground for me -->
+
 
 # Content
 
 
 [Stats and Machine Learning]()
 
-- [Random Variables](00-stats/01-random-variables)
-- [Principal Component Analysis](01-machine-learning/05-dimensionality-reduction/01-pca)
-- [Support Vectors Machine](01-machine-learning/02-svm)
-- [Monte Carlo Approximation](00-stats/02-monte-carlo)
-- [Univariate Sampling Techniques](00-stats/03-univariate-sampling-techniques)
-- [Decision Tree](01-machine-learning/03-decision-tree)
-- [Bayesian Networks](00-stats/04-bayesian-networks)
-- [Gaussian Processes](00-stats/06-gaussian-process)
-- [Bayesian Inference](00-stats/07-bayesian-inference)
-- [Gaussian Discriminant Analysis](00-stats/05-gda)
-- [EM Algorithm](00-stats/09-em-algorithm)
+- [Random Variables](./00-stats/01-random-variables)
+- [Principal Component Analysis](./01-machine-learning/05-dimensionality-reduction/01-pca)
+- [Support Vectors Machine](./01-machine-learning/02-svm)
+- [Monte Carlo Approximation](./00-stats/02-monte-carlo)
+- [Univariate Sampling Techniques](./00-stats/03-univariate-sampling-techniques)
+- [Decision Tree](./01-machine-learning/03-decision-tree)
+- [Bayesian Networks](./00-stats/04-bayesian-networks)
+- [Gaussian Processes](./00-stats/06-gaussian-process)
+- [Bayesian Inference](./00-stats/07-bayesian-inference)
+- [Gaussian Discriminant Analysis](./00-stats/05-gda)
+- [EM Algorithm](./00-stats/09-em-algorithm)
 
 
 [Neural Networks](#neural-networks)
-- [Shallow Neural Network](02-neural-networks/01-shallow-neural-network)
-- [Bias & Variance](02-neural-networks/02-deep-neural-network/01-bias-variance)
+- [Shallow Neural Network](./02-neural-networks/01-shallow-neural-network)
+- [Bias & Variance](./02-neural-networks/02-deep-neural-network/01-bias-variance)
 
 [Optimization and Regularization](#optimization-and-regularization)
-- [Weight Decay](03-optimization-and-regularization/10-weights-decay)
-- [Dropout](03-optimization-and-regularization/11-dropout)
+- [Weight Decay](./03-optimization-and-regularization/10-weights-decay)
+- [Dropout](./03-optimization-and-regularization/11-dropout)
 
 [Computer Vision](#computer-vision)
-- [1D Convolutional Neural Network VS Fully Connected Network](04-cnn/01-mnist-conv1d)
-- [LeNet](04-cnn/03-le-net)
-- [AlexNet](04-cnn/04-alex-net)
-- [VGGNet](04-cnn/05-vgg-net)
-- [U-Net](2-segmentation/01-unet)
+- [1D Convolutional Neural Network VS Fully Connected Network](./04-cnn/01-mnist-conv1d)
+- [LeNet](./04-cnn/03-le-net)
+- [AlexNet](./04-cnn/04-alex-net)
+- [VGGNet](./04-cnn/05-vgg-net)
+- [U-Net](./2-segmentation/01-unet)
 
 [Natural Language Processing](#natural-language-processing)
-- [Introduction: tokenization, bag of words/ngrams, tfidf](11-nlp/01-introduction)
-- [Language modeling](11-nlp/02-language-modeling)
-- [RNNs](05-rnn/01-rnn)
-- [LSTMs](05-rnn/03-lstms)
-- [GRUs](05-rnn/04-gru)
-- [Deep RNNs](05-rnn/05-deep-rnn)
-- [Bidirectional RNNs](05-rnn/06-bidirectional-rnn)
-- [Seq2Seq Encoder Decoder](05-rnn/08-seq2seq)
-- [Seq2Seq Attention Encoder Decoder](06-transformers/01-attention)
+- [Introduction: tokenization, bag of words/ngrams, tfidf](./11-nlp/01-introduction)
+- [Language modeling](./11-nlp/02-language-modeling)
+- [RNNs](./05-rnn/01-rnn)
+- [LSTMs](./05-rnn/03-lstms)
+- [GRUs](./05-rnn/04-gru)
+- [Deep RNNs](./05-rnn/05-deep-rnn)
+- [Bidirectional RNNs](./05-rnn/06-bidirectional-rnn)
+- [Seq2Seq Encoder Decoder](./05-rnn/08-seq2seq)
+- [Seq2Seq Attention Encoder Decoder](./06-transformers/01-attention)
+- [GPT](./06-transformers/03-gpt)
+- [GPT 2](./06-transformers/05-gpt-2)
 
 
 [Generative Adversarial Networks](#generative-adversarial-networks)
-- [GAN: Introduction](07-image-generation/00-intro-to-gans)
-- [Conditional GAN](07-image-generation/02-cond-gan)
-- [DCGAN](07-image-generation/01-dcgan)
-- [InfoGAN](07-image-generation/03-infogan)
-- [Least squares GAN](07-image-generation/04-least-squares-gan)
-- [VAE](07-image-generation/06-vae)
+- [GAN: Introduction](./07-image-generation/00-intro-to-gans)
+- [Conditional GAN](./07-image-generation/01-cond-gan)
+- [DCGAN](./07-image-generation/02-dcgan)
+- [InfoGAN](./07-image-generation/03-infogan)
+- [Least squares GAN](./07-image-generation/04-least-squares-gan)
+- [AutoEncoders](./07-image-generation/05-autoencoders)
+- [VAE](./07-image-generation/06-vae)
+- [DDPM](./07-image-generation/07-ddpm)
+- [DDIM](./07-image-generation/08-ddim)
 
-[Time Series](#time-series)
+<!-- [Time Series](#time-series) -->
 
-[Reinforcement learning](#reinforcement-learning)
+<!-- [Reinforcement learning](#reinforcement-learning) -->
 
 
 

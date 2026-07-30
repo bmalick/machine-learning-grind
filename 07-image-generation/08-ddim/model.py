@@ -6,9 +6,6 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 
-import torchvision
-import torchvision.transforms as T
-
 @dataclass
 class DDPMConfig:
     in_channels: int = 1
@@ -223,9 +220,9 @@ class DDPM(nn.Module):
             loss = self.compute_loss(out, targets)
         return out, loss
 
-def ddpm_inference(model, xT: torch.Tensor, return_ims = False) -> torch.Tensor:
-    if return_ims:
-        ims = []
+
+
+def ddpm_inference(model, xT: torch.Tensor) -> torch.Tensor:
     with torch.no_grad():
         xt = xT
         B = xt.shape[0]
@@ -239,15 +236,71 @@ def ddpm_inference(model, xT: torch.Tensor, return_ims = False) -> torch.Tensor:
             z = torch.randn(xt.shape, device=xt.device)
             xt = 1 / math.sqrt(alpha_t) * (xt - coef * eps_hat) + sigma_q_t * z
 
-            if return_ims:
-                # grid = torchvision.utils.make_grid(xt.detach().cpu(), nrow=12)
-                # img_pil = T.ToPILImage()(grid)
-                ims.append(xt.detach().cpu())
-
-        if return_ims:
-            return xt, ims
-
         return xt
+
+
+def ddim_inference(model, xT: torch.Tensor, num_steps: int = 20) -> torch.Tensor:
+    step_ratio = model.scheduler.T // num_steps
+    timesteps_seq = list(range(0, model.scheduler.T, step_ratio))
+    with torch.no_grad():
+        xt = xT
+        B = xt.shape[0]
+        for i in reversed(range(len(timesteps_seq))):
+            t = timesteps_seq[i]
+            t_prev = timesteps_seq[i-1] if i>0 else 0
+            alpha_bar_t = model.scheduler.alphas_bar[t]
+            alpha_bar_t_prev = model.scheduler.alphas_bar[t_prev] if t > 0 else 1.0
+            sigma_q_t = model.scheduler.sigma_q[t]
+            timesteps = torch.full((B,), t, device=xt.device)
+            eps_hat, _ = model(xt, timesteps)
+            pred_x0 = (xt - math.sqrt(1 - alpha_bar_t) * eps_hat) / math.sqrt(alpha_bar_t)
+            dir_xt = math.sqrt(1 - alpha_bar_t_prev) * eps_hat
+            z = torch.randn(xt.shape, device=xt.device)
+            xt = math.sqrt(alpha_bar_t_prev) * pred_x0 + dir_xt + sigma_q_t * z
+        return xt
+
+
+class DDPM(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.config = config
+        self.scheduler = DDPMScheduler(config)
+
+        self.time_mlp = nn.Sequential(
+            PositionalEncoding(config, config.time_dim_base),
+            nn.Linear(config.time_dim_base, config.time_dim),
+            nn.SiLU(),
+            nn.Linear(config.time_dim, config.time_dim),
+        )
+        self.unet= Unet(config)
+
+    def compute_loss(self, out, noise):
+        return F.mse_loss(out, noise)
+
+    def forward(self, x, timesteps, targets=None):
+        global_timesteps = self.time_mlp(timesteps)
+        out = self.unet(x, global_timesteps)
+
+        loss = None
+        if targets is not None:
+            loss = self.compute_loss(out, targets)
+        return out, loss
+
+    def inference(self, xT: torch.Tensor) -> torch.Tensor:
+        with torch.no_grad():
+            xt = xT
+            B = xt.shape[0]
+            for t in reversed(range(self.scheduler.T)):
+                alpha_t = self.scheduler.alphas[t]
+                alpha_bar_t = self.scheduler.alphas_bar[t]
+                sigma_q_t = self.scheduler.sigma_q[t]
+                timesteps = torch.full((B,), t, device=xt.device)
+                eps_hat, _ = self(xt, timesteps)
+                coef = (1 - alpha_t) / math.sqrt(1 - alpha_bar_t)
+                z = torch.randn(xt.shape, device=xt.device)
+                xt = 1 / math.sqrt(alpha_t) * (xt - coef * eps_hat) + sigma_q_t * z
+
+            return xt
 
 class SpiralMLP(DDPM):
     def __init__(self, config):

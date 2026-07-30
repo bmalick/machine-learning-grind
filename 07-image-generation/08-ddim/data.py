@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import torchvision.transforms as T
 
 
-def show_images(batch: tuple[torch.Tensor]|list[torch.Tensor], nrow: int = 2, figsize: tuple[float, float] = (10.,8.), show: bool = True, save_name: str = None, white_bg: bool = False, title=None):
+def show_images(batch: tuple[torch.Tensor]|list[torch.Tensor], nrow: int = 2, figsize: tuple[float, float] = (10.,8.), show: bool = True, save_name: str = None, white_bg: bool = False):
     if isinstance(batch, (tuple, list)):
         batch_imgs = batch[0]
     elif isinstance(batch, torch.Tensor):
@@ -25,7 +25,6 @@ def show_images(batch: tuple[torch.Tensor]|list[torch.Tensor], nrow: int = 2, fi
     # if isinstance(batch[0])
     ax.imshow(T.ToPILImage()(imgs))
     ax.axis("off")
-    ax.set_title(title or '')
     if save_name: fig.savefig(save_name, bbox_inches="tight", pad_inches=1)
     if show: plt.show()
     plt.close()
