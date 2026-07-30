@@ -10,11 +10,11 @@ from train import TrainConfig, Trainer
 torch.manual_seed(14)
 
 if __name__ == "__main__":
-    # x_T = torch.randn((1000,2))
-    # datamodule = FermatSpiralData(SpiralDataConfig(n_samples=10000, train_batch_size=256))
-    # ddpm = SpiralMLP(DDPMConfig(timesteps=100))
-    # trainer = Trainer(TrainConfig(run_name="ddpm-simple", max_epochs=700), datamodule, ddpm, x_T)
-    # trainer.fit()
+    x_T = torch.randn((1000,2))
+    datamodule = FermatSpiralData(SpiralDataConfig(n_samples=10000, train_batch_size=256))
+    ddpm = SpiralMLP(DDPMConfig(timesteps=100))
+    trainer = Trainer(TrainConfig(run_name="ddpm-simple", max_epochs=700), datamodule, ddpm, x_T)
+    trainer.fit()
 
     datamodule = Mnist(MnistConfig())
     ddpm = DDPM(DDPMConfig())

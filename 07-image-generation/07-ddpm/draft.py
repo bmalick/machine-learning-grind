@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
+import math
+import scipy
+import matplotlib as mpl
 
 from data import Mnist, MnistConfig, show_images
 
@@ -108,3 +111,86 @@ class Attention(nn.Module):
 # attn = Attention(32, 64, 8)
 # attn(x)
 
+
+
+
+def mixture_gaussian(pis: np.ndarray, mus: np.ndarray, sigmas: np.ndarray, N: int = 1000):
+    ks = np.random.choice(len(pis), p=pis, size=N)
+    return np.random.normal(mus[ks], sigmas[ks])
+
+def test_forward_diffusion1():
+    pis = np.array([0.3, 0.7])
+    mus = np.array([-2., 2.])
+    sigmas = np.array([0.2, 1.])
+    x0 = mixture_gaussian(pis, mus, sigmas, 2000)
+
+    fig, axes = plt.subplots(2, 4, figsize=(12, 6))
+    axes = axes.ravel()
+
+    to_plot = [0, 4, 9, 29, 39, 59, 99, 199]
+    T = 200
+
+    alpha_t = 0.97
+    x_t = x0.copy()
+
+    cur = 0
+    pos = np.linspace(-5, 5, 500)
+
+    for t in range(T):
+        x_t = math.sqrt(alpha_t) * x_t + math.sqrt(1 - alpha_t) * np.random.normal(size=(x_t.shape[0]))
+        if t in to_plot:
+            kde_est = scipy.stats.gaussian_kde(x_t)
+            axes[cur].plot(pos, kde_est(pos))
+            axes[cur].set_title(f"t={t+1}")
+            cur += 1
+    fig.savefig("forward-diffusion1.jpg")
+    plt.show()
+
+
+def test_forward_diffusion2():
+
+    pis = np.array([0.5, 0.5])
+    mus = np.array([3, -3])
+    sigmas = np.array([1, 1])
+
+    alpha_t = 0.05
+    T = 200
+    num_traj = 2000
+    ts = np.arange(T)
+    eps = np.random.normal(0, 1, size=(num_traj, T))
+
+    trajectories = np.zeros((num_traj, T))
+    x0 = mixture_gaussian(pis, mus, sigmas, num_traj)
+
+    trajectories[:, 0] = x0
+    # trajectories[:, 0] = (x0 - np.mean(x0)) / np.std(x0)
+
+    for i in range(T-1):
+        trajectories[:, i+1] = math.sqrt(1 - alpha_t) * trajectories[:, i] + math.sqrt(alpha_t) * eps[:, i]
+
+    x_grid = np.linspace(-6, 6, 300)
+    density_map = np.zeros((len(x_grid), T))
+
+    for t in range(T):
+        kde = scipy.stats.gaussian_kde(trajectories[:, t])
+        density_map[:, t] = kde(x_grid)
+
+    plt.figure(figsize=(10, 6))
+    contour = plt.contourf(ts, x_grid, density_map, levels=100, cmap="plasma")
+    plt.colorbar(contour)
+
+    cmap = mpl.colormaps["Greys"]
+    num_plots = 5
+    colors = cmap(np.linspace(0.3, 0.9, num_plots))
+
+    sample_idx = np.random.choice(num_traj, size=num_plots, replace=False)
+
+    for color_idx, traj_idx in enumerate(sample_idx):
+        plt.plot(trajectories[traj_idx,:], c=colors[color_idx])
+
+    plt.savefig("forward-diffusion2.jpg")
+    plt.show()
+
+
+test_forward_diffusion1()
+test_forward_diffusion2()
